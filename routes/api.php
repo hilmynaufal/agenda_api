@@ -42,6 +42,7 @@ Route::post('PrintAgenda', [ApiController::class,'PrintAgenda']);
 Route::post('GetSurat', [ApiController::class,'GetSurat']);
 Route::post('GetSingleAgenda', [ApiController::class,'GetSingleAgenda']);
 Route::post('GetCatatanBulanan', [ApiController::class,'GetCatatanBulanan']);
+Route::post('GetPendamping', [ApiController::class,'GetPendamping']);
 
 // Route::post('UpdateSandi', [ApiController::class,'UpdateSandi']);
 // Route::post('CreateUser', [ApiController::class,'InsertUser']);
