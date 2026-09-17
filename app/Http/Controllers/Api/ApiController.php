@@ -446,7 +446,7 @@ class ApiController extends Controller
 
         if ($status_update !== []) {
             if ($status_agenda == 2 && !empty($pendamping)) {
-                $this->kirimWhatsappPerwakilan($pendamping, $tanggal_mulai, $waktu_mulai, $keterangan);
+                $this->kirimWhatsappPerwakilan($id, $pendamping, $tanggal_mulai, $waktu_mulai, $keterangan);
             }
 
             return response()->json([
@@ -478,10 +478,12 @@ class ApiController extends Controller
         }
     }
 
-    protected function kirimWhatsappPerwakilan($pendamping, $tanggal_mulai, $waktu_mulai, $keterangan)
+    protected function kirimWhatsappPerwakilan($agendaId, $pendamping, $tanggal_mulai, $waktu_mulai, $keterangan)
     {
         try {
-            $master = MPendamping::whereRaw('LOWER(nama) = ?', [strtolower(trim($pendamping))])->first();
+            $master = MPendamping::whereRaw('LOWER(nama) = ?', [strtolower(trim($pendamping))])
+                ->where('aktif', true)
+                ->first();
 
             if ($master === null || empty($master->no_hp)) {
                 return;
@@ -493,7 +495,11 @@ class ApiController extends Controller
                 . ($keterangan ? "Keterangan: {$keterangan}\n" : "")
                 . "\nMohon konfirmasi kehadiran. Terima kasih.";
 
-            (new FonnteService())->send($master->no_hp, $message);
+            (new FonnteService())->send($master->no_hp, $message, [
+                'agenda_id' => $agendaId,
+                'pendamping_id' => $master->id,
+                'nama_pendamping' => $master->nama,
+            ]);
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('Gagal mengirim notifikasi WhatsApp perwakilan', [
                 'pendamping' => $pendamping,

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\WaLog;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -16,12 +17,13 @@ class FonnteService
         $this->url = config('services.fonnte.url');
     }
 
-    public function send(string $noHp, string $message): bool
+    public function send(string $noHp, string $message, array $context = []): bool
     {
         $target = $this->normalizePhone($noHp);
 
         if ($target === null) {
             Log::warning('Fonnte: nomor HP tidak valid, pesan tidak dikirim', ['no_hp' => $noHp]);
+            $this->catat($context, $noHp, $message, false, 'Nomor HP tidak valid');
             return false;
         }
 
@@ -39,22 +41,43 @@ class FonnteService
                     'status' => $response->status(),
                     'body' => $response->body(),
                 ]);
+                $this->catat($context, $target, $message, false, $response->body());
                 return false;
             }
 
             $body = $response->json();
             if (isset($body['status']) && $body['status'] === false) {
                 Log::error('Fonnte: API menolak pesan', ['target' => $target, 'response' => $body]);
+                $this->catat($context, $target, $message, false, $response->body());
                 return false;
             }
 
+            $this->catat($context, $target, $message, true, $response->body());
             return true;
         } catch (\Throwable $e) {
             Log::error('Fonnte: exception saat mengirim WhatsApp', [
                 'target' => $target,
                 'error' => $e->getMessage(),
             ]);
+            $this->catat($context, $target, $message, false, $e->getMessage());
             return false;
+        }
+    }
+
+    protected function catat(array $context, ?string $noHp, string $message, bool $status, ?string $response): void
+    {
+        try {
+            WaLog::create([
+                'agenda_id' => $context['agenda_id'] ?? null,
+                'pendamping_id' => $context['pendamping_id'] ?? null,
+                'nama_pendamping' => $context['nama_pendamping'] ?? null,
+                'no_hp' => $noHp,
+                'pesan' => $message,
+                'status' => $status,
+                'response' => $response,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Fonnte: gagal mencatat log pengiriman', ['error' => $e->getMessage()]);
         }
     }
 

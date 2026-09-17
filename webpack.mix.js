@@ -15,3 +15,7 @@ mix.js('resources/js/app.js', 'public/js')
     .postCss('resources/css/app.css', 'public/css', [
         //
     ]);
+
+// Tema Filament (warna/font Siagan Bedas) di-build lewat Tailwind CLI langsung,
+// bukan lewat Mix — lihat npm script "build:filament-theme". Laravel Mix 6 di
+// environment ini konflik versi dengan webpack terbaru untuk build CSS-only ini.

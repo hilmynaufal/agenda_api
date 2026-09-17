@@ -7,12 +7,18 @@
         "watch-poll": "mix watch -- --watch-options-poll=1000",
         "hot": "mix watch --hot",
         "prod": "npm run production",
-        "production": "mix --production"
+        "production": "mix --production",
+        "build:filament-theme": "tailwindcss -c tailwind.config.js -i resources/css/filament/theme.css -o public/css/filament/theme.css --minify"
     },
     "devDependencies": {
+        "@tailwindcss/forms": "^0.5.7",
+        "@tailwindcss/typography": "^0.5.10",
+        "autoprefixer": "^10.4.16",
         "axios": "^0.21",
         "laravel-mix": "^6.0.6",
         "lodash": "^4.17.19",
-        "postcss": "^8.1.14"
+        "postcss": "^8.1.14",
+        "tailwindcss": "^3.4.1",
+        "tippy.js": "^6.3.7"
     }
 }

@@ -9,4 +9,15 @@ class MPendamping extends Model
 {
     protected $table = 'm_pendamping';
     protected $primaryKey = 'id';
+
+    protected $fillable = [
+        'nama',
+        'jabatan',
+        'no_hp',
+        'aktif',
+    ];
+
+    protected $casts = [
+        'aktif' => 'boolean',
+    ];
 }
