@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-17T00:00:00Z",
+  "title": "Design System: Siagan Bedas Admin",
+  "extensions": {
+    "colorMeta": {
+      "registry-teal": { "role": "primary", "displayName": "Registry Teal", "canonical": "#088C91", "tonalRamp": ["#0B2628", "#0F686B", "#088C91", "#3FA6AA", "#7FC3C6", "#B7DEDF", "#DDEEEE", "#FBFCFC"] },
+      "registry-teal-deep": { "role": "primary-hover", "displayName": "Deep Registry Teal", "canonical": "#0F686B" },
+      "registry-teal-wash": { "role": "primary-container", "displayName": "Pale Teal Wash", "canonical": "#DDEEEE" },
+      "paper-white": { "role": "surface", "displayName": "Paper White", "canonical": "#FBFCFC" },
+      "ink-teal": { "role": "on-surface", "displayName": "Ink Teal", "canonical": "#0B2628" },
+      "registry-fog": { "role": "surface-variant", "displayName": "Registry Fog", "canonical": "#EEEEEE" },
+      "slate-label": { "role": "on-surface-variant", "displayName": "Slate Label", "canonical": "#9E9E9E" },
+      "divider-mist": { "role": "outline", "displayName": "Divider Mist", "canonical": "#E4E7E7" },
+      "status-pending": { "role": "tertiary", "displayName": "Amber Pending", "canonical": "#FFC107" },
+      "status-delegated": { "role": "tertiary", "displayName": "Muted Violet", "canonical": "#9C55B5" },
+      "status-attended": { "role": "primary", "displayName": "Teal Attended", "canonical": "#088C91" },
+      "action-confirm": { "role": "success", "displayName": "Confirm Green", "canonical": "#2E7D32" },
+      "action-edit": { "role": "info", "displayName": "Working Blue", "canonical": "#1E6FBF" },
+      "action-delete": { "role": "error", "displayName": "Alert Red", "canonical": "#B3261E" }
+    },
+    "typographyMeta": {
+      "headline": { "displayName": "Headline", "purpose": "Judul halaman/section." },
+      "title": { "displayName": "Title", "purpose": "Judul kartu atau baris utama tabel." },
+      "body": { "displayName": "Body", "purpose": "Teks konten umum, form, deskripsi." },
+      "label": { "displayName": "Label", "purpose": "Badge status dan meta info kecil (tanggal, jam)." }
+    },
+    "shadows": [
+      { "name": "card-resting", "value": "0 1px 2px rgba(11,38,40,0.06), 0 1px 3px rgba(11,38,40,0.10)", "purpose": "Shadow default kartu/tabel saat diam, tipis dan tinted teal." },
+      { "name": "card-hover", "value": "0 2px 4px rgba(11,38,40,0.08), 0 4px 8px rgba(11,38,40,0.12)", "purpose": "Saat kartu/baris di-hover atau fokus." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Transisi warna hover/focus pada tombol dan badge, 150ms." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Tombol aksi utama (simpan, tambah data).",
+      "html": "<button class=\"ds-btn-primary\">Simpan</button>",
+      "css": ".ds-btn-primary { background: #088C91; color: #FFFFFF; padding: 12px 20px; border-radius: 10px; border: none; font-family: Poppins, sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; transition: background 150ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-btn-primary:hover { background: #0F686B; } .ds-btn-primary:focus-visible { outline: 2px solid #088C91; outline-offset: 2px; }"
+    },
+    {
+      "name": "Confirm Button",
+      "kind": "button",
+      "refersTo": "button-confirm",
+      "description": "Tombol aksi konfirmasi/terima agenda.",
+      "html": "<button class=\"ds-btn-confirm\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M20 6 9 17l-5-5\"/></svg> Terima</button>",
+      "css": ".ds-btn-confirm { display: inline-flex; align-items: center; gap: 8px; background: #2E7D32; color: #FFFFFF; padding: 12px 20px; border-radius: 10px; border: none; font-family: Poppins, sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; transition: background 150ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-btn-confirm:hover { background: #245F27; }"
+    },
+    {
+      "name": "Delete Button",
+      "kind": "button",
+      "refersTo": "button-delete",
+      "description": "Tombol aksi destruktif (hapus, tolak) — selalu solid merah, tidak ditonalkan.",
+      "html": "<button class=\"ds-btn-delete\">Hapus Agenda</button>",
+      "css": ".ds-btn-delete { background: #B3261E; color: #FFFFFF; padding: 12px 20px; border-radius: 10px; border: none; font-family: Poppins, sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; transition: background 150ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-btn-delete:hover { background: #8C1E18; }"
+    },
+    {
+      "name": "Pending Badge",
+      "kind": "chip",
+      "refersTo": "badge-pending",
+      "description": "Status 'Belum Dikonfirmasi' — tonal, bukan solid seperti versi mobile.",
+      "html": "<span class=\"ds-badge-pending\">Belum Dikonfirmasi</span>",
+      "css": ".ds-badge-pending { display: inline-block; background: #FFF3D6; color: #8A6300; padding: 4px 12px; border-radius: 999px; font-family: Poppins, sans-serif; font-weight: 500; font-size: 11px; letter-spacing: 0.02em; }"
+    },
+    {
+      "name": "Delegated Badge",
+      "kind": "chip",
+      "refersTo": "badge-delegated",
+      "description": "Status 'Diwakilkan'.",
+      "html": "<span class=\"ds-badge-delegated\">Diwakilkan</span>",
+      "css": ".ds-badge-delegated { display: inline-block; background: #F1E3F6; color: #7A3A90; padding: 4px 12px; border-radius: 999px; font-family: Poppins, sans-serif; font-weight: 500; font-size: 11px; letter-spacing: 0.02em; }"
+    },
+    {
+      "name": "Attended Badge",
+      "kind": "chip",
+      "refersTo": "badge-attended",
+      "description": "Status 'Dihadiri oleh Bupati'.",
+      "html": "<span class=\"ds-badge-attended\">Dihadiri oleh Bupati</span>",
+      "css": ".ds-badge-attended { display: inline-block; background: #DDEEEE; color: #088C91; padding: 4px 12px; border-radius: 999px; font-family: Poppins, sans-serif; font-weight: 500; font-size: 11px; letter-spacing: 0.02em; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Input teks standar form — latar terisi, tanpa border terlihat saat idle.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Nama Pendamping</span><input type=\"text\" class=\"ds-field-input\" placeholder=\"Masukkan nama\"></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 6px; font-family: Poppins, sans-serif; } .ds-field-label { font-size: 12px; font-weight: 500; color: #9E9E9E; } .ds-field-input { background: #EEEEEE; border: 2px solid transparent; border-radius: 10px; padding: 12px 16px; font-size: 14px; color: #0B2628; outline: none; transition: border-color 150ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-field-input:focus-visible { border-color: #088C91; background: #EEEEEE; }"
+    },
+    {
+      "name": "Agenda Status Card",
+      "kind": "card",
+      "refersTo": "card-agenda",
+      "description": "Kartu ringkasan agenda untuk list/dashboard. Redesain dari kartu mobile: badge tonal menggantikan blok warna solid 16px di tepi kiri (larangan side-stripe).",
+      "html": "<article class=\"ds-agenda-card\"><header class=\"ds-agenda-card__head\"><span class=\"ds-badge-pending\">Belum Dikonfirmasi</span><time class=\"ds-agenda-card__date\">20 Sep 2026</time></header><h3 class=\"ds-agenda-card__title\">Rapat Koordinasi OPD</h3><p class=\"ds-agenda-card__place\">Ruang Rapat Bupati</p><div class=\"ds-agenda-card__time\"><strong>09:00</strong><span>s/d 10:00</span></div></article>",
+      "css": ".ds-agenda-card { background: #FBFCFC; border-radius: 10px; padding: 16px; box-shadow: 0 1px 2px rgba(11,38,40,0.06), 0 1px 3px rgba(11,38,40,0.10); font-family: Poppins, sans-serif; transition: box-shadow 150ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-agenda-card:hover { box-shadow: 0 2px 4px rgba(11,38,40,0.08), 0 4px 8px rgba(11,38,40,0.12); } .ds-agenda-card__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; } .ds-agenda-card__date { font-size: 10px; color: #088C91; } .ds-agenda-card__title { font-size: 16px; font-weight: 600; color: #088C91; margin: 0 0 4px; } .ds-agenda-card__place { font-size: 11px; color: #088C91; margin: 0 0 12px; } .ds-agenda-card__time { display: flex; gap: 8px; align-items: baseline; color: #0B2628; } .ds-agenda-card__time strong { font-size: 15px; font-weight: 600; } .ds-agenda-card__time span { font-size: 11px; font-weight: 300; color: #9E9E9E; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Registry Desk",
+    "overview": "Bayangkan meja registrasi di kantor kabupaten: rapi, resmi, setiap map dan status punya tempatnya sendiri, tidak ada yang berteriak untuk mendapat perhatian kecuali memang sedang menunggu tindakan. Admin panel ini adalah versi digital dari meja itu — dipakai ajudan di jam kerja, di layar desktop, untuk memindai status agenda secepat mungkin lalu bertindak. Sistem ini diturunkan langsung dari aplikasi mobile Siagan Bedas yang sudah berjalan (Material 3, seed warna teal gelap #00686C, tipografi Poppins), bukan dibangun dari nol. Satu pergeseran disengaja dari app mobile: badge status dan tombol aksi bergeser dari solid penuh ke lebih tonal/halus, supaya terasa lebih tenang di layar besar yang menampilkan banyak baris data sekaligus.",
+    "keyCharacteristics": [
+      "Radius 10px konsisten di card, badge, input, tombol",
+      "Status selalu dikomunikasikan lewat warna badge tonal + label teks",
+      "Poppins tunggal untuk semua level teks, dibedakan lewat berat huruf",
+      "Shadow tipis khas Material dipertahankan dari app mobile"
+    ],
+    "rules": [
+      { "name": "The Tonal Shift Rule", "body": "Badge status dan chip memakai latar wash + teks/ikon warna penuh, bukan latar warna penuh seperti di app mobile. Aksi destruktif tetap solid merah.", "section": "colors" },
+      { "name": "The One Family Rule", "body": "Tidak ada font kedua. Hierarki diselesaikan lewat berat huruf saja.", "section": "typography" },
+      { "name": "The Thin Shadow Rule", "body": "Shadow selalu tipis dan tinted teal, tidak pernah hitam pekat atau tersebar lebar.", "section": "elevation" },
+      { "name": "The Ten Rule", "body": "Setiap permukaan interaktif memakai radius 10px, tanpa pengecualian.", "section": "components" }
+    ],
+    "dos": [
+      "Do pakai radius 10px di semua permukaan interaktif (The Ten Rule)",
+      "Do komunikasikan status lewat badge tonal + label teks Bahasa Indonesia",
+      "Do pakai Poppins tunggal, bedakan hierarki lewat berat huruf saja",
+      "Do pertahankan shadow tipis tinted-teal pada card",
+      "Do jaga aksi hapus tetap solid merah pekat, tidak ditonalkan"
+    ],
+    "donts": [
+      "Don't gunakan aksen garis warna di tepi kiri/kanan card, list item, atau sidebar item",
+      "Don't biarkan tampilan terlihat generik/out-of-the-box Filament",
+      "Don't pakai gradient pada teks atau latar dekoratif",
+      "Don't pakai badge/status hanya lewat ikon tanpa label teks",
+      "Don't campur beberapa family font",
+      "Don't buat modal sebagai langkah pertama untuk aksi sederhana"
+    ]
+  }
+}
