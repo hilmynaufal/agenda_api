@@ -4,11 +4,13 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\MAgendaResource\Pages;
 use App\Models\MAgenda;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Illuminate\Database\Eloquent\Builder;
 
 class MAgendaResource extends Resource
 {
@@ -138,6 +140,38 @@ class MAgendaResource extends Resource
                 Tables\Filters\SelectFilter::make('status_agenda')
                     ->label('Status')
                     ->options(self::STATUS_OPTIONS),
+                Tables\Filters\Filter::make('tanggal_mulai')
+                    ->label('Rentang Tanggal')
+                    ->form([
+                        Forms\Components\DatePicker::make('dari_tanggal')
+                            ->label('Dari Tanggal'),
+                        Forms\Components\DatePicker::make('sampai_tanggal')
+                            ->label('Sampai Tanggal'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['dari_tanggal'] ?? null,
+                                fn (Builder $q, $date) => $q->whereDate('tanggal_mulai', '>=', $date),
+                            )
+                            ->when(
+                                $data['sampai_tanggal'] ?? null,
+                                fn (Builder $q, $date) => $q->whereDate('tanggal_mulai', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['dari_tanggal'] ?? null) {
+                            $indicators[] = 'Dari ' . Carbon::parse($data['dari_tanggal'])->translatedFormat('d M Y');
+                        }
+
+                        if ($data['sampai_tanggal'] ?? null) {
+                            $indicators[] = 'Sampai ' . Carbon::parse($data['sampai_tanggal'])->translatedFormat('d M Y');
+                        }
+
+                        return $indicators;
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

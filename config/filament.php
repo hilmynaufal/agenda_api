@@ -267,7 +267,9 @@ return [
     |
     */
 
-    'favicon' => asset('images/favicon.png'),
+    // Path relatif terhadap domain, bukan asset() -- config di-load sebelum
+    // Laravel siap resolve URL generator, jadi asset()/url() di sini crash.
+    'favicon' => '/images/favicon.png',
 
     /*
     |--------------------------------------------------------------------------
