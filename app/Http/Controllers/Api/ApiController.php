@@ -13,6 +13,7 @@ use App\Models\MSiswaUser;
 use App\Models\MAgendaSiswa;
 use App\Models\MAbsensi;
 use App\Models\MPendamping;
+use App\Models\WaTemplate;
 use App\Services\FonnteService;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
@@ -524,33 +525,61 @@ class ApiController extends Controller
     }
 
     /**
-     * Format pesan mengikuti gaya "Share Agenda" ke WhatsApp di aplikasi
-     * Flutter (lihat shareAgenda() di catatan_harian_page.dart), supaya
-     * pendamping menerima detail selengkap yang biasa dibagikan manual.
+     * Susun pesan jadi 3 bagian: header & footer bisa dikustomisasi admin
+     * (lewat menu Pengaturan Pesan WA, mendukung token seperti {acara}),
+     * sedangkan blok detail di tengah tetap terstruktur tetap -- mengikuti
+     * gaya "Share Agenda" ke WhatsApp di aplikasi Flutter (lihat
+     * shareAgenda() di catatan_harian_page.dart).
      */
     protected function buatPesanPerwakilan(string $namaPendamping, $agenda): string
+    {
+        $template = WaTemplate::current();
+        $token = $this->buatTokenPesan($namaPendamping, $agenda);
+
+        $header = trim(strtr($template->header ?: WaTemplate::DEFAULT_HEADER, $token));
+        $footer = trim(strtr($template->footer ?: WaTemplate::DEFAULT_FOOTER, $token));
+        $detail = $this->buatDetailAgenda($namaPendamping, $agenda);
+
+        return implode("\n\n", array_filter([$header, $detail, $footer], fn ($bagian) => $bagian !== ''));
+    }
+
+    /**
+     * Nilai aktual untuk tiap token yang bisa dipakai di header/footer.
+     * Daftar labelnya (untuk ditampilkan ke admin) ada di WaTemplate::tokenLabels().
+     */
+    protected function buatTokenPesan(string $namaPendamping, $agenda): array
     {
         $tanggal = $agenda->tanggal_mulai
             ? Carbon::parse($agenda->tanggal_mulai)->locale('id')->translatedFormat('l, j M Y')
             : '-';
         $waktu = $agenda->waktu_mulai
             ? Carbon::parse($agenda->waktu_mulai)->locale('id')->translatedFormat('H:i')
-            : null;
+            : '-';
 
-        $baris = [
-            "Yth. {$namaPendamping}",
-            "",
-            "Anda ditunjuk sebagai perwakilan untuk menghadiri agenda berikut:",
-            "",
-            $tanggal,
+        return [
+            '{nama_pendamping}' => $namaPendamping,
+            '{acara}' => $agenda->acara ?: '-',
+            '{tanggal}' => $tanggal,
+            '{waktu}' => $waktu,
+            '{tempat}' => $agenda->tempat ?: '-',
+            '{leading_sektor}' => $agenda->leading_sektor ?: '-',
+            '{pakaian}' => $agenda->pakaian ?: '-',
+            '{catatan}' => $agenda->keterangan_tambahan ?: '-',
         ];
+    }
 
-        if ($waktu) {
-            $baris[] = $waktu;
+    protected function buatDetailAgenda(string $namaPendamping, $agenda): string
+    {
+        $token = $this->buatTokenPesan($namaPendamping, $agenda);
+
+        $baris = [$token['{tanggal}']];
+
+        if ($agenda->waktu_mulai) {
+            $baris[] = $token['{waktu}'];
         }
 
-        $baris[] = $agenda->acara ?? '-';
-        $baris[] = "di " . ($agenda->tempat ?? '-');
+        $baris[] = $token['{acara}'];
+        $baris[] = "di " . $token['{tempat}'];
 
         if (!empty($agenda->leading_sektor)) {
             $baris[] = "LS: {$agenda->leading_sektor}";
@@ -568,9 +597,6 @@ class ApiController extends Controller
             $baris[] = "Catatan:";
             $baris[] = $agenda->keterangan_tambahan;
         }
-
-        $baris[] = "";
-        $baris[] = "Mohon konfirmasi kehadiran. Terima kasih.";
 
         return implode("\n", $baris);
     }
