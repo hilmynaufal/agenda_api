@@ -21,7 +21,6 @@ class ApiController extends Controller
 {
 
 
-
     public function Test(Request $request)
     {
         $bidang = DB::table('m_role')
@@ -223,29 +222,31 @@ class ApiController extends Controller
     }
 
 
-
     public function InsertPermohonanAgendaOPD(Request $request)
     {
-        $validator = validator::make($request->all(), [
-            'id_pegawai' => 'required',
-            'nip' => 'required',
-            'skpdnama' => 'required',
-            // 'waktu_mulai' => 'required',
-            // 'waktu_selesai' => 'required',
-            'tanggal_mulai' => 'required',
-            'acara' => 'required',
-            'tempat' => 'required',
-            'leading_sektor' => 'required',
-            'surat' => 'required',
-        ]);
-
         $surat = null;
+        $surat2 = null;
+        $surat3 = null;
 
         if ($request->hasFile('surat')) {
             $file = $request->file('surat');
-            $destinationPath = 'public/uploads';
+            $destinationPath = 'uploads';
             $file->move($destinationPath, $file->getClientOriginalName());
             $surat = $file->getClientOriginalName();
+        }
+
+        if ($request->hasFile('surat2')) {
+            $file2 = $request->file('surat2');
+            $destinationPath = 'uploads';
+            $file2->move($destinationPath, $file2->getClientOriginalName());
+            $surat2 = $file2->getClientOriginalName();
+        }
+
+        if ($request->hasFile('surat3')) {
+            $file3 = $request->file('surat3');
+            $destinationPath = 'uploads';
+            $file3->move($destinationPath, $file3->getClientOriginalName());
+            $surat3 = $file3->getClientOriginalName();
         }
 
         $id_pegawai = $request->input("id_pegawai");
@@ -254,9 +255,15 @@ class ApiController extends Controller
         $waktu_mulai = $request->input("waktu_mulai");
         $waktu_selesai = $request->input("waktu_selesai");
         $tanggal_mulai = $request->input("tanggal_mulai");
+        $tanggal_selesai = $request->input("tanggal_selesai");
         $acara = $request->input("acara");
         $tempat = $request->input("tempat");
         $leading_sektor = $request->input("leading_sektor");
+        $pendamping = $request->input("pendamping");
+        $penugasan = $request->input("penugasan");
+        $no_hp = $request->input("no_hp");
+        $pakaian = $request->input("pakaian");
+        $keterangan_tambahan = $request->input("keterangan_tambahan"); // Tambahkan variabel untuk field keterangan_tambahan
         $status_agenda = 0;
 
         $mulai = $tanggal_mulai . " " . $waktu_mulai . ":00.000000";
@@ -269,11 +276,19 @@ class ApiController extends Controller
         $agenda->waktu_mulai = $waktu_mulai == null ? null : $mulai;
         $agenda->waktu_selesai = $waktu_selesai == null ? null : $selesai;
         $agenda->tanggal_mulai = $tanggal_mulai;
+        $agenda->tanggal_selesai = $tanggal_selesai == null ? $tanggal_mulai : $tanggal_selesai;
         $agenda->acara = $acara;
         $agenda->tempat = $tempat;
         $agenda->leading_sektor = $leading_sektor;
+        $agenda->pendamping = $pendamping;
+        $agenda->penugasan = $penugasan;
         $agenda->surat = $surat;
+        $agenda->surat2 = $surat2;
+        $agenda->surat3 = $surat3;
         $agenda->status_agenda = $status_agenda;
+        $agenda->no_hp = $no_hp;
+        $agenda->pakaian = $pakaian;
+        $agenda->keterangan_tambahan = $keterangan_tambahan; // Tambahkan field keterangan_tambahan ke dalam model
 
         //cek agenda jika waktu ditentukan
         $cek_agenda = null;
@@ -282,14 +297,12 @@ class ApiController extends Controller
             $timeMulai->addMinutes(-29);
             $timeAkhir = Carbon::parse($mulai);
             $timeAkhir->addMinutes(29);
-            // print("mulai: " . $timeMulai . " selesai: " . $timeAkhir);
 
             $cek_agenda = DB::select(DB::raw("SELECT id, waktu_mulai, waktu_selesai 
                         FROM t_agenda
                         WHERE 
                         tanggal_mulai = '" . $tanggal_mulai . "'
                         AND ((waktu_mulai BETWEEN '" . $timeMulai . "' AND '" . $timeAkhir . "'))
-                        AND status_agenda = 1
                         ORDER BY waktu_mulai ASC
                         "));
         }
@@ -316,7 +329,6 @@ class ApiController extends Controller
                 ], 200);
             }
         }
-
 
     }
 
@@ -425,11 +437,13 @@ class ApiController extends Controller
         $tanggal_mulai = $request->input("tanggal_mulai");
         $waktu_mulai = $request->input("waktu_mulai");
         $waktu_selesai = $request->input("waktu_selesai");
-        $pendamping = $request->input("pendamping");
-        $penugasan = $request->input("penugasan");
+        $tanggal_selesai = $request->input("tanggal_selesai"); // Tambahkan field tanggal_selesai
+        $pakaian = $request->input("pakaian"); // Tambahkan field pakaian
         $keterangan = $request->input("keterangan");
         $status_agenda = $request->input("status_agenda");
-
+        // Dipakai hanya untuk trigger notifikasi WA di bawah -- KonfirmasiAgenda
+        // tidak menulis pendamping ke t_agenda, itu tanggung jawab UpdateAgenda.
+        $pendamping = $request->input("pendamping");
 
         $status_update = DB::table('t_agenda')
             ->where('id', $id)
@@ -437,26 +451,25 @@ class ApiController extends Controller
                 'tanggal_mulai' => $tanggal_mulai,
                 'waktu_mulai' => $waktu_mulai == null ? null : $tanggal_mulai . " " . $waktu_mulai . ":00.000000",
                 'waktu_selesai' => $waktu_selesai == null ? null : $tanggal_mulai . " " . $waktu_selesai . ":00.000000",
-                'pendamping' => $pendamping,
-                'penugasan' => $penugasan,
+                'tanggal_selesai' => $tanggal_selesai == null ? $tanggal_mulai : $tanggal_selesai, // Tambahkan update untuk field tanggal_selesai
+                'pakaian' => $pakaian, // Tambahkan update untuk field pakaian
                 'keterangan' => $keterangan,
                 'status_agenda' => $status_agenda,
-
             ]);
 
         if ($status_update !== []) {
             if ($status_agenda == 2 && !empty($pendamping)) {
-                $this->kirimWhatsappPerwakilan($id, $pendamping, $tanggal_mulai, $waktu_mulai, $keterangan);
+                $this->kirimWhatsappPerwakilan($id, $pendamping);
             }
 
             return response()->json([
                 'code' => 200,
-                'message' => 'Acc Agenda berhasil'
+                'message' => 'Konfirmasi agenda berhasil'
             ], 200);
         } else {
             return response()->json([
                 'code' => 201,
-                'message' => 'Acc Agenda gagal'
+                'message' => 'Konfirmasi agenda gagal'
             ], 200);
         }
     }
@@ -478,7 +491,7 @@ class ApiController extends Controller
         }
     }
 
-    protected function kirimWhatsappPerwakilan($agendaId, $pendamping, $tanggal_mulai, $waktu_mulai, $keterangan)
+    protected function kirimWhatsappPerwakilan($agendaId, $pendamping)
     {
         try {
             $master = MPendamping::whereRaw('LOWER(nama) = ?', [strtolower(trim($pendamping))])
@@ -489,11 +502,13 @@ class ApiController extends Controller
                 return;
             }
 
-            $message = "Yth. {$master->nama}\n\n"
-                . "Anda ditunjuk sebagai perwakilan untuk menghadiri agenda berikut:\n"
-                . "Tanggal: {$tanggal_mulai}" . ($waktu_mulai ? " {$waktu_mulai}" : "") . "\n"
-                . ($keterangan ? "Keterangan: {$keterangan}\n" : "")
-                . "\nMohon konfirmasi kehadiran. Terima kasih.";
+            $agenda = DB::table('t_agenda')->where('id', $agendaId)->first();
+
+            if ($agenda === null) {
+                return;
+            }
+
+            $message = $this->buatPesanPerwakilan($master->nama, $agenda);
 
             (new FonnteService())->send($master->no_hp, $message, [
                 'agenda_id' => $agendaId,
@@ -508,6 +523,58 @@ class ApiController extends Controller
         }
     }
 
+    /**
+     * Format pesan mengikuti gaya "Share Agenda" ke WhatsApp di aplikasi
+     * Flutter (lihat shareAgenda() di catatan_harian_page.dart), supaya
+     * pendamping menerima detail selengkap yang biasa dibagikan manual.
+     */
+    protected function buatPesanPerwakilan(string $namaPendamping, $agenda): string
+    {
+        $tanggal = $agenda->tanggal_mulai
+            ? Carbon::parse($agenda->tanggal_mulai)->locale('id')->translatedFormat('l, j M Y')
+            : '-';
+        $waktu = $agenda->waktu_mulai
+            ? Carbon::parse($agenda->waktu_mulai)->locale('id')->translatedFormat('H:i')
+            : null;
+
+        $baris = [
+            "Yth. {$namaPendamping}",
+            "",
+            "Anda ditunjuk sebagai perwakilan untuk menghadiri agenda berikut:",
+            "",
+            $tanggal,
+        ];
+
+        if ($waktu) {
+            $baris[] = $waktu;
+        }
+
+        $baris[] = $agenda->acara ?? '-';
+        $baris[] = "di " . ($agenda->tempat ?? '-');
+
+        if (!empty($agenda->leading_sektor)) {
+            $baris[] = "LS: {$agenda->leading_sektor}";
+        }
+
+        $baris[] = "Pendamping:";
+        $baris[] = $namaPendamping;
+
+        if (!empty($agenda->pakaian)) {
+            $baris[] = "Pakaian:";
+            $baris[] = $agenda->pakaian;
+        }
+
+        if (!empty($agenda->keterangan_tambahan)) {
+            $baris[] = "Catatan:";
+            $baris[] = $agenda->keterangan_tambahan;
+        }
+
+        $baris[] = "";
+        $baris[] = "Mohon konfirmasi kehadiran. Terima kasih.";
+
+        return implode("\n", $baris);
+    }
+
     public function UpdateAgenda(Request $request)
     {
         $id = $request->input("id");
@@ -516,27 +583,88 @@ class ApiController extends Controller
         $tanggal_mulai = $request->input("tanggal_mulai");
         $waktu_mulai = $request->input("waktu_mulai");
         $waktu_selesai = $request->input("waktu_selesai");
+        $tanggal_selesai = $request->input("tanggal_selesai"); // Tambahkan field tanggal_selesai
         $no_hp = $request->input("no_hp");
+        $leading_sektor = $request->input("leading_sektor");
+        $pendamping = $request->input("pendamping");
+        $penugasan = $request->input("penugasan");
+        $hapusFileFlag = $request->input("hapusFileFlag");
+        $hapusFileFlag2 = $request->input("hapusFileFlag2");
+        $hapusFileFlag3 = $request->input("hapusFileFlag3");
+        $pakaian = $request->input("pakaian"); // Tambahkan field pakaian
+        $keterangan_tambahan = $request->input("keterangan_tambahan"); // Tambahkan field keterangan_tambahan
+        // $surat = $request->input("surat");
 
-        // $pendamping = $request->input("pendamping");
-        // $penugasan = $request->input("penugasan");
-        // $keterangan = $request->input("keterangan");
-        // $status_agenda = $request->input("status_agenda");
+
+
+        $surat = null;
+        $surat2 = null;
+        $surat3 = null;
+
+        if ($request->hasFile('surat')) {
+            $file = $request->file('surat');
+            $destinationPath = 'uploads';
+            $file->move($destinationPath, $file->getClientOriginalName());
+            $surat = $file->getClientOriginalName();
+        }
+
+        if ($request->hasFile('surat2')) {
+            $file2 = $request->file('surat2');
+            $destinationPath = 'uploads';
+            $file2->move($destinationPath, $file2->getClientOriginalName());
+            $surat2 = $file2->getClientOriginalName();
+        }
+
+        if ($request->hasFile('surat3')) {
+            $file3 = $request->file('surat3');
+            $destinationPath = 'uploads';
+            $file3->move($destinationPath, $file3->getClientOriginalName());
+            $surat3 = $file3->getClientOriginalName();
+        }
+
+        $updateMap = [
+            'acara' => $acara,
+            'tempat' => $tempat,
+            'tanggal_mulai' => $tanggal_mulai,
+            'waktu_mulai' => ($waktu_mulai == null || $waktu_mulai == "") ? null : $tanggal_mulai . " " . $waktu_mulai . ":00.000000",
+            'waktu_selesai' => ($waktu_selesai == null || $waktu_selesai == "") ? null : $tanggal_mulai . " " . $waktu_selesai . ":00.000000",
+            'tanggal_selesai' => $tanggal_selesai == null ? $tanggal_mulai : $tanggal_selesai,
+            'no_hp' => $no_hp,
+            'leading_sektor' => $leading_sektor,
+            'pendamping' => $pendamping,
+            'penugasan' => $penugasan,
+            'pakaian' => $pakaian, // Tambahkan update untuk field pakaian
+            'keterangan_tambahan' => $keterangan_tambahan, // Tambahkan update untuk field keterangan_tambahan
+        ];
+
+        if ($surat != null) {
+            $updateMap['surat'] = $surat;
+        }
+
+        if ($surat2 != null) {
+            $updateMap['surat2'] = $surat2;
+        }
+
+        if ($surat3 != null) {
+            $updateMap['surat3'] = $surat3;
+        }
+
+
+        if ($hapusFileFlag == "true") {
+            $updateMap['surat'] = null;
+        }
+
+        if ($hapusFileFlag2 == "true") {
+            $updateMap['surat2'] = null;
+        }
+
+        if ($hapusFileFlag3 == "true") {
+            $updateMap['surat3'] = null;
+        }
 
         $status_update = DB::table('t_agenda')
             ->where('id', $id)
-            ->update([
-                'acara' => $acara,
-                'tempat' => $tempat,
-                'tanggal_mulai' => $tanggal_mulai,
-                'waktu_mulai' => $tanggal_mulai . " " . $waktu_mulai . ":00.000000",
-                'waktu_selesai' => $tanggal_mulai . " " . $waktu_selesai . ":00.000000",
-                'no_hp' => $no_hp
-                // 'pendamping' => $pendamping,
-                // 'penugasan' => $penugasan,
-                // 'keterangan' => $keterangan,
-                // 'status_agenda' => $status_agenda
-            ]);
+            ->update($updateMap);
 
 
         if ($status_update !== []) {
@@ -603,11 +731,14 @@ class ApiController extends Controller
     public function DashboardPegawai(Request $request)
     {
         $id_pegawai = $request->input("id_pegawai");
+        $now = date("Y-m-d");
 
-        $dashboardPegawai = DB::select(DB::raw("SELECT
-        (select count(id) as total_konfirmasi from t_agenda WHERE status_agenda = 2 and id_pegawai = " . $id_pegawai . ") as total_ditolak,
-        (select count(id) as total_konfirmasi from t_agenda WHERE status_agenda = 1 and id_pegawai = " . $id_pegawai . ") as total_diacc,
-        (select count(id) as total_konfirmasi from t_agenda WHERE (status_agenda = 0 or status_agenda = 3) and id_pegawai = " . $id_pegawai . ") as total_konfirmasi"));
+
+        $dashboardPegawai = DB::select(DB::raw('SELECT
+        (select count(id) as total_konfirmasi from t_agenda WHERE tanggal_mulai <= "' . $now . '" AND tanggal_selesai >= "' . $now . '") as total_ditolak,
+        (select count(id) as total_konfirmasi from t_agenda WHERE tanggal_mulai <= "' . $now . '" AND tanggal_selesai >= "' . $now . '") as total_diacc,
+        (select count(id) as total_konfirmasi from t_agenda WHERE tanggal_mulai <= "' . $now . '" AND tanggal_selesai >= "' . $now . '") as total_konfirmasi,
+        (select count(id) as total_kecamatan from t_agenda WHERE skpdnama LIKE "%kecamatan%" AND tanggal_mulai <= "' . $now . '" AND tanggal_selesai >= "' . $now . '") as total_kecamatan'));
 
         return response()->json([
             'code' => 200,
@@ -618,11 +749,17 @@ class ApiController extends Controller
     public function DashboardAjudan(Request $request)
     {
         $id_pegawai = $request->input("id_pegawai");
+        $now = date("Y-m-d");
 
-        $dashboardAjudan = DB::select(DB::raw("SELECT
-        (select count(id) as total_konfirmasi from t_agenda WHERE status_agenda = 2 ) as total_ditolak,
-        (select count(id) as total_konfirmasi from t_agenda WHERE status_agenda = 1 ) as total_diacc,
-        (select count(id) as total_konfirmasi from t_agenda WHERE (status_agenda = 0) ) as total_konfirmasi"));
+        // $dashboardAjudan = DB::select(DB::raw("SELECT
+        // (select count(id) as total_konfirmasi from t_agenda WHERE status_agenda = 2 ) as total_ditolak,
+        // (select count(id) as total_konfirmasi from t_agenda WHERE status_agenda = 1 ) as total_diacc,
+        // (select count(id) as total_konfirmasi from t_agenda WHERE (status_agenda = 0) ) as total_konfirmasi"));
+
+        $dashboardAjudan = DB::select(DB::raw('SELECT
+        (select count(id) as total_konfirmasi from t_agenda WHERE tanggal_mulai <= "' . $now . '" AND tanggal_selesai >= "' . $now . '") as total_ditolak,
+        (select count(id) as total_konfirmasi from t_agenda WHERE tanggal_mulai <= "' . $now . '" AND tanggal_selesai >= "' . $now . '") as total_diacc,
+        (select count(id) as total_konfirmasi from t_agenda WHERE tanggal_mulai <= "' . $now . '" AND tanggal_selesai >= "' . $now . '") as total_konfirmasi'));
 
         return response()->json([
             'code' => 200,
@@ -772,6 +909,7 @@ class ApiController extends Controller
                     'surat',
                     'status_agenda',
                     'keterangan',
+                    'keterangan_tambahan',
                     'no_hp'
                 )
                 ->where('id_pegawai', '=', $id_pegawai)
@@ -801,6 +939,7 @@ class ApiController extends Controller
                         'surat',
                         'status_agenda',
                         'keterangan',
+                        'keterangan_tambahan',
                         'no_hp'
                     )
                     ->where('id_pegawai', '=', $id_pegawai)
@@ -833,6 +972,7 @@ class ApiController extends Controller
                         'surat',
                         'status_agenda',
                         'keterangan',
+                        'keterangan_tambahan',
                         'no_hp'
                     )
                     ->where('id_pegawai', '=', $id_pegawai)
@@ -864,8 +1004,6 @@ class ApiController extends Controller
 
     public function GetCatatanBulanan(Request $request)
     {
-        $limit = $request->input("limit");
-        $index = $request->input("index");
         $status = $request->input("status");
         $tanggalMulai = $request->input('tanggal_mulai');
         $tanggalAkhir = $request->input('tanggal_akhir');
@@ -887,12 +1025,14 @@ class ApiController extends Controller
                 'surat',
                 'status_agenda',
                 'keterangan',
-                'no_hp'
+                'no_hp',
+                'pakaian', // Field pakaian sudah ada
+                'keterangan_tambahan' // Tambahkan field baru keterangan_tambahan
             )
             // ->where('status_agenda', '=', $status)
             ->whereBetween('tanggal_mulai', [$tanggalMulai, $tanggalAkhir])
-            ->limit($limit)
-            ->offset($index)
+            // ->limit($limit)
+            // ->offset($index)
             ->orderBy('tanggal_mulai', 'ASC')
             ->orderBy('waktu_mulai', 'ASC')
             ->get();
@@ -980,6 +1120,7 @@ class ApiController extends Controller
         $index = $request->input("index");
         $status = $request->input("status");
         $tanggal_mulai = $request->input("tanggal_mulai");
+        $pakaian = $request->input("pakaian");
 
         $agenda;
 
@@ -1001,7 +1142,8 @@ class ApiController extends Controller
                     'surat',
                     'status_agenda',
                     'keterangan',
-                    'no_hp'
+                    'no_hp',
+                    'pakaian'
                 )
                 ->where('status_agenda', '!=', 2)
                 ->limit($limit)
@@ -1028,7 +1170,8 @@ class ApiController extends Controller
                         'surat',
                         'status_agenda',
                         'keterangan',
-                        'no_hp'
+                        'no_hp',
+                        'pakaian'
                     )
                     ->where('status_agenda', '=', $status)
                     ->where('tanggal_mulai', '=', $tanggal_mulai)
@@ -1058,7 +1201,8 @@ class ApiController extends Controller
                         'surat',
                         'status_agenda',
                         'keterangan',
-                        'no_hp'
+                        'no_hp',
+                        'pakaian'
                     )
                     ->where('status_agenda', '=', $status)
                     ->where('tanggal_mulai', '=', $tanggal_mulai)
@@ -1091,6 +1235,7 @@ class ApiController extends Controller
     public function GetAgendaForAjudan(Request $request)
     {
         $tanggal_mulai = $request->input("tanggal_mulai");
+        $pakaian = $request->input("pakaian");
 
         $agenda = DB::table('t_agenda')
             ->select(
@@ -1109,7 +1254,8 @@ class ApiController extends Controller
                 'surat',
                 'status_agenda',
                 'keterangan',
-                'no_hp'
+                'no_hp',
+                'pakaian'
             )
             ->where('status_agenda', '=', 1)
             ->where('tanggal_mulai', '=', $tanggal_mulai)
@@ -1136,6 +1282,7 @@ class ApiController extends Controller
     public function GetAgendaPerwakilanForAjudan(Request $request)
     {
         $tanggal_mulai = $request->input("tanggal_mulai");
+        $pakaian = $request->input("pakaian");
 
         $agenda = DB::table('t_agenda')
             ->select(
@@ -1154,7 +1301,8 @@ class ApiController extends Controller
                 'surat',
                 'status_agenda',
                 'keterangan',
-                'no_hp'
+                'no_hp',
+                'pakaian'
             )
             ->where('status_agenda', '=', 2)
             ->where('tanggal_mulai', '=', $tanggal_mulai)
@@ -1181,6 +1329,7 @@ class ApiController extends Controller
     public function GetAgendaBupati(Request $request)
     {
         $tanggal_mulai = $request->input("tanggal_mulai");
+        $pakaian = $request->input("pakaian");
 
         $agenda = DB::table('t_agenda')
             ->select(
@@ -1199,7 +1348,8 @@ class ApiController extends Controller
                 'surat',
                 'status_agenda',
                 'keterangan',
-                'no_hp'
+                'no_hp',
+                'pakaian'
             )
             ->where('tanggal_mulai', '=', $tanggal_mulai)
             ->where('status_agenda', '=', 1)
@@ -1225,6 +1375,7 @@ class ApiController extends Controller
     public function GetAgendaKonfirmasiBupati(Request $request)
     {
         $tanggal_mulai = $request->input("tanggal_mulai");
+        $pakaian = $request->input("pakaian");
 
         $agenda = DB::table('t_agenda')
             ->select(
@@ -1243,7 +1394,8 @@ class ApiController extends Controller
                 'surat',
                 'status_agenda',
                 'keterangan',
-                'no_hp'
+                'no_hp',
+                'pakaian'
             )
             ->where('tanggal_mulai', '=', $tanggal_mulai)
             ->where('status_agenda', '=', 0)
@@ -1273,6 +1425,7 @@ class ApiController extends Controller
         $limit = $request->input("limit");
         $index = $request->input("index");
         $akan_datang = $request->input("akan_datang");
+        $pakaian = $request->input("pakaian");
 
         // $agenda;
 
@@ -1286,6 +1439,7 @@ class ApiController extends Controller
                     'waktu_mulai',
                     'waktu_selesai',
                     'tanggal_mulai',
+                    'tanggal_selesai',
                     'acara',
                     'tempat',
                     'leading_sektor',
@@ -1294,7 +1448,9 @@ class ApiController extends Controller
                     'surat',
                     'status_agenda',
                     'keterangan',
-                    'no_hp'
+                    'no_hp',
+                    'pakaian',
+                    'keterangan_tambahan' // Tambahkan field keterangan_tambahan
                 )
                 ->where('status_agenda', '=', $status_agenda)
                 ->where('tanggal_mulai', $akan_datang == null ? "=" : ">=", $tanggal_mulai)
@@ -1316,6 +1472,7 @@ class ApiController extends Controller
                         'waktu_mulai',
                         'waktu_selesai',
                         'tanggal_mulai',
+                        'tanggal_selesai',
                         'acara',
                         'tempat',
                         'leading_sektor',
@@ -1324,7 +1481,9 @@ class ApiController extends Controller
                         'surat',
                         'status_agenda',
                         'keterangan',
-                        'no_hp'
+                        'no_hp',
+                        'pakaian',
+                        'keterangan_tambahan' // Tambahkan field keterangan_tambahan
                     )
                     ->where('status_agenda', '=', $status_agenda)
                     ->limit($limit)
@@ -1343,6 +1502,7 @@ class ApiController extends Controller
                             'waktu_mulai',
                             'waktu_selesai',
                             'tanggal_mulai',
+                            'tanggal_selesai',
                             'acara',
                             'tempat',
                             'leading_sektor',
@@ -1351,9 +1511,13 @@ class ApiController extends Controller
                             'surat',
                             'status_agenda',
                             'keterangan',
-                            'no_hp'
+                            'no_hp',
+                            'pakaian',
+                            'keterangan_tambahan' // Tambahkan field keterangan_tambahan
                         )
-                        ->where('tanggal_mulai', '=', $tanggal_mulai)
+                        // ->where('tanggal_mulai', '=', $tanggal_mulai)
+                        ->where('tanggal_mulai', '<=', $tanggal_mulai)
+                        ->where('tanggal_selesai', '>=', $tanggal_mulai)
                         ->limit($limit)
                         ->offset($index)
                         ->orderBy('tanggal_mulai', 'DESC')
@@ -1369,6 +1533,7 @@ class ApiController extends Controller
                             'waktu_mulai',
                             'waktu_selesai',
                             'tanggal_mulai',
+                            'tanggal_selesai',
                             'acara',
                             'tempat',
                             'leading_sektor',
@@ -1377,7 +1542,9 @@ class ApiController extends Controller
                             'surat',
                             'status_agenda',
                             'keterangan',
-                            'no_hp'
+                            'no_hp',
+                            'pakaian',
+                            'keterangan_tambahan' // Tambahkan field keterangan_tambahan
                         )
                         // ->where('tanggal_mulai', '=', $tanggal_mulai)
                         ->where('status_agenda', '=', $status_agenda)
@@ -1388,8 +1555,6 @@ class ApiController extends Controller
                         ->get();
                 }
             }
-
-
         }
 
 
@@ -1408,6 +1573,183 @@ class ApiController extends Controller
             ], 200);
         }
     }
+
+    public function GetJadwalBupati(Request $request)
+    {
+        $tanggal_mulai = $request->input("tanggal_mulai");
+        // $status_agenda = $request->input("status_agenda");
+        $limit = $request->input("limit");
+        $index = $request->input("index");
+        // $akan_datang = $request->input("akan_datang");
+        $pakaian = $request->input("pakaian");
+
+        $agenda = DB::table('t_agenda')
+            ->select(
+                'id',
+                'id_pegawai',
+                'nip',
+                'skpdnama',
+                'waktu_mulai',
+                'waktu_selesai',
+                'tanggal_mulai',
+                'tanggal_selesai',
+                'acara',
+                'tempat',
+                'leading_sektor',
+                'pendamping',
+                'penugasan',
+                'surat',
+                'surat2',
+                'surat3',
+                'status_agenda',
+                'keterangan',
+                'no_hp',
+                'pakaian',
+                'keterangan_tambahan' // Tambahkan field keterangan_tambahan
+            )
+            ->where('tanggal_mulai', '<=', $tanggal_mulai)
+            ->where('tanggal_selesai', '>=', $tanggal_mulai)
+            ->where(function ($query) {
+                $query->where('status_agenda', '=', 1)->orWhere('status_agenda', '=', 2)->orWhere('status_agenda', '=', 0);
+            })
+            ->where('skpdnama', 'NOT LIKE', '%kecamatan%')
+            ->orderBy('tanggal_mulai', 'DESC')
+            ->orderBy('waktu_mulai', 'ASC')
+            ->get();
+
+
+        $agendaToArray = $agenda->toArray();
+
+        if ($agendaToArray !== []) {
+            return response()->json([
+                'code' => 200,
+                'agenda' => $agenda
+            ], 200);
+        } else {
+            return response()->json([
+                'code' => 201,
+                'message' => 'Tidak ada agenda'
+            ], 200);
+        }
+    }
+
+    public function GetJadwalKecamatan(Request $request)
+    {
+        $tanggal_mulai = $request->input("tanggal_mulai");
+        // $status_agenda = $request->input("status_agenda");
+        $limit = $request->input("limit");
+        $index = $request->input("index");
+        // $akan_datang = $request->input("akan_datang");
+        $pakaian = $request->input("pakaian");
+
+        $agenda = DB::table('t_agenda')
+            ->select(
+                'id',
+                'id_pegawai',
+                'nip',
+                'skpdnama',
+                'waktu_mulai',
+                'waktu_selesai',
+                'tanggal_mulai',
+                'tanggal_selesai',
+                'acara',
+                'tempat',
+                'leading_sektor',
+                'pendamping',
+                'penugasan',
+                'surat',
+                'surat2',
+                'surat3',
+                'status_agenda',
+                'keterangan',
+                'no_hp',
+                'pakaian',
+                'keterangan_tambahan' // Tambahkan field keterangan_tambahan
+            )
+            ->where('skpdnama', 'like', '%kecamatan%')
+            ->where('tanggal_mulai', '<=', $tanggal_mulai)
+            ->where('tanggal_selesai', '>=', $tanggal_mulai)
+            ->where(function ($query) {
+                $query->where('status_agenda', '=', 1)->orWhere('status_agenda', '=', 2)->orWhere('status_agenda', '=', 0);
+            })
+            ->orderBy('tanggal_mulai', 'DESC')
+            ->orderBy('waktu_mulai', 'ASC')
+            ->get();
+
+
+        $agendaToArray = $agenda->toArray();
+
+        if ($agendaToArray !== []) {
+            return response()->json([
+                'code' => 200,
+                'agenda' => $agenda
+            ], 200);
+        } else {
+            return response()->json([
+                'code' => 201,
+                'message' => 'Tidak ada agenda'
+            ], 200);
+        }
+    }
+
+    public function GetJadwalBupatiHariIni(Request $request)
+    {
+
+        $tanggal_mulai = date('Y-m-d');
+
+        $agenda = DB::table('t_agenda')
+            ->select(
+                'id',
+                'id_pegawai',
+                'nip',
+                'skpdnama',
+                'waktu_mulai',
+                'waktu_selesai',
+                'tanggal_mulai',
+                'tanggal_selesai',
+                'acara',
+                'tempat',
+                'leading_sektor',
+                'pendamping',
+                'penugasan',
+                'surat',
+                'surat2',
+                'surat3',
+                'status_agenda',
+                'keterangan',
+                'no_hp',
+                'pakaian',
+                'keterangan_tambahan' // Tambahkan field keterangan_tambahan
+            )
+            // ->where('tanggal_mulai', '=', $tanggal_mulai)
+            ->where('tanggal_mulai', '<=', $tanggal_mulai)
+            ->where('tanggal_selesai', '>=', $tanggal_mulai)
+            ->where(function ($query) {
+                $query->where('status_agenda', '=', 1)->orWhere('status_agenda', '=', 2)->orWhere('status_agenda', '=', 0);
+            })
+            // ->limit($limit)
+            // ->offset($index)
+            ->orderBy('tanggal_mulai', 'DESC')
+            ->orderBy('waktu_mulai', 'ASC')
+            ->get();
+
+
+        $agendaToArray = $agenda->toArray();
+
+        if ($agendaToArray !== []) {
+            return response()->json([
+                'code' => 200,
+                'agenda' => $agenda
+            ], 200);
+        } else {
+            return response()->json([
+                'code' => 201,
+                'message' => 'Tidak ada agenda'
+            ], 200);
+        }
+    }
+
+
 
     public function PrintAgenda(Request $request)
     {
@@ -1451,452 +1793,5 @@ class ApiController extends Controller
             ], 200);
         }
     }
-
-    // public function SendNotification(Request $request)
-    // {
-
-    //     $token          = $request->input("token");
-    //     $body           = $request->input("body");
-    //     $title          = $request->input("title");
-    //     $server_key     = "AAAA3neawNg:APA91bEoMqGthnqv_GsCa87qtXuIXGvZPcqMciURjBeKHkoSJitcFHMlrJ3qu76_xhGadWxkPUnc_avpUW6LYDGMWVNOPi1GCEwSy97Wz-IW5wWTzCXSsuk-BhJsMJRu4nSXR9zjk2wA";
-
-    //     $url = 'https://fcm.googleapis.com/fcm/send';
-
-
-    //     $json = '{
-    //                 "to" : "'.$token.'",
-    //                 "notification":{
-    //                     "body":"'.$body.'",
-    //                     "title":"'.$title.'"
-    //                 },
-    //                 "android":{
-    //                     "priority":"normal"
-    //                 },
-    //                 "apns":{
-    //                     "headers":{
-    //                     "apns-priority":"5"
-    //                     }
-    //                 },
-    //                 "webpush": {
-    //                     "headers": {
-    //                     "Urgency": "high"
-    //                     }
-    //                 }
-    //             }';
-
-    //     $jsonRequest = json_decode($json);  
-
-    //     $headers = array(
-    //         'Content-Type:application/json',
-    //         'Authorization:key='.$server_key
-    //     );
-
-    //     // -- connect to API e-bpr
-
-    //     $ch = curl_init();
-
-    //     curl_setopt($ch, CURLOPT_URL,            $url );
-    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
-    //     curl_setopt($ch, CURLOPT_POST,           1 );
-    //     curl_setopt($ch, CURLOPT_POSTFIELDS,     $json); 
-    //     curl_setopt($ch, CURLOPT_HTTPHEADER,     $headers); 
-    //     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-    //     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-    //     $result=curl_exec ($ch);
-
-    //     $obj = json_decode($result, true);
-
-
-
-    //     $response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    //     curl_close($ch);
-
-    //     // echo $response;
-
-    //     $jsonResult = json_decode($result, true);
-    //     return response()->json([
-    //         'code' => 200,
-    //         'jsonRequest' => $jsonRequest,
-    //         'resultFirebase' => $jsonResult
-    //     ], 200);
-    // }
-
-
-    // Test Berkat
-
-    public function TestSiswa(Request $request)
-    {
-        $test = DB::table('m_siswa')
-            ->get();
-
-        $testToArray = $test->toArray();
-
-        if ($testToArray !== []) {
-            return response()->json([
-                'code' => 200,
-                'dataSiswa' => $testToArray
-            ], 200);
-        } else {
-            return response()->json([
-                'code' => 201,
-                'message' => 'Tidak ada data siswa'
-            ], 200);
-        }
-
-    }
-
-    public function GetSiswaByNisn(Request $request)
-    {
-        $nisn = $request->input("nisn");
-
-        $siswa = DB::table('m_siswa')
-            ->where('nisn', '=', $nisn)
-            ->first();
-
-        // $siswaToArray = $siswa->toArray();
-
-        if ($siswa !== null) {
-            $user = DB::table('m_siswa_user')
-                ->where('id_siswa', '=', $siswa->id)
-                ->first();
-            // $userToArray = $user->toArray();
-            if ($user !== null) {
-                return response()->json([
-                    'code' => 200,
-                    'dataSiswa' => $siswa,
-                    'username' => $user->username
-                ], 200);
-            } else {
-                return response()->json([
-                    'code' => 202,
-                    'dataSiswa' => $siswa,
-                    'username' => null
-                ], 200);
-            }
-
-        } else {
-            return response()->json([
-                'code' => 201,
-                'dataSiswa' => null,
-                'username' => null
-            ], 200);
-        }
-
-    }
-
-    public function GetUserById(Request $request)
-    {
-        $id_siswa = $request->input("id_siswa");
-
-        $siswa = DB::table('m_siswa_user')
-            ->where('id_siswa', '=', $id_siswa)
-            ->get();
-
-        $siswaToArray = $siswa->toArray();
-
-        if ($siswaToArray !== []) {
-            return response()->json([
-                'code' => 200,
-                'dataSiswa' => $siswaToArray
-            ], 200);
-        } else {
-            return response()->json([
-                'code' => 201,
-                'dataSiswa' => []
-            ], 200);
-        }
-
-    }
-
-    public function Register(Request $request)
-    {
-        $username = $request->input("username");
-        $password = Hash::make($request->input("password"));
-        $id_siswa = $request->input("id_siswa");
-
-        $create_user = new MSiswaUser;
-        $create_user->username = $username;
-        $create_user->password = $password;
-        $create_user->id_siswa = $id_siswa;
-        $create_user->save();
-
-        if ($create_user != null) {
-            return response()->json([
-                'code' => 200,
-                'dataUsers' => 'Berhasil mendaftarkan akun',
-                'id' => $create_user->id,
-                'username' => $create_user->username,
-                'password' => $create_user->password
-            ], 200);
-        } else {
-            return response()->json([
-                'code' => 201,
-                'dataUsers' => 'Gagal mendaftarkan akun'
-            ], 200);
-        }
-
-    }
-
-    public function LoginSiswa(Request $request)
-    {
-        $username = $request->input("username");
-        $password = $request->input("password");
-
-        $Users;
-
-        $Users = DB::table('m_siswa_user as user')
-            ->select(
-                'user.id as useri_id',
-                'user.id_siswa',
-                'user.username',
-                'user.password',
-                'siswa.nisn',
-                'siswa.nama',
-                'siswa.kelas'
-            )
-            ->join('m_siswa as siswa', 'siswa.id', '=', 'user.id_siswa')
-            ->where('user.username', '=', $username)
-            ->first();
-
-
-        if ($Users && Hash::check($password, $Users->password)) {
-            $Data_Users = DB::table('m_siswa_user as user')
-                ->select(
-                    'user.id as useri_id',
-                    'user.id_siswa',
-                    'user.username',
-                    'user.password',
-                    'siswa.nisn',
-                    'siswa.nama',
-                    'siswa.kelas'
-                )
-                ->join('m_siswa as siswa', 'siswa.id', '=', 'user.id_siswa')
-                ->where('user.username', '=', $username)
-                ->get();
-
-            $UsersToArray = $Data_Users->toArray();
-
-            if ($UsersToArray !== []) {
-                return response()->json([
-                    'code' => 200,
-                    'dataUsers' => $Data_Users
-                ], 200);
-            } else {
-                return response()->json([
-                    'code' => 201,
-                    'dataUsers' => [],
-                    'message' => 'Tidak ada data user, silahkan periksa username dan password anda'
-                ], 200);
-            }
-
-        } else if ($Users == null) {
-            return response()->json([
-                'code' => 201,
-                'dataUsers' => [],
-                'message' => 'Tidak ada data user, silahkan periksa username dan password anda'
-            ], 200);
-        } else {
-            return response()->json([
-                'code' => 201,
-                'dataUsers' => [],
-                'message' => 'Tidak ada data user, silahkan periksa username dan password anda'
-            ], 200);
-        }
-    }
-
-    public function CreateAgendaSiswa(Request $request)
-    {
-        $id_siswa = $request->input("id_siswa");
-        $nama_agenda = $request->input("nama_agenda");
-        $tanggal = $request->input("tanggal");
-        $jam_mulai = $request->input("jam_mulai");
-
-        $create_agenda = new MAgendaSiswa;
-        $create_agenda->id_siswa = $id_siswa;
-        $create_agenda->nama_agenda = $nama_agenda;
-        $create_agenda->tanggal = $tanggal;
-        $create_agenda->jam_mulai = $jam_mulai;
-        $create_agenda->save();
-
-        if ($create_agenda != null) {
-            return response()->json([
-                'code' => 200,
-                'dataAgenda' => 'Berhasil menambahkan agenda',
-                'id' => $create_agenda->id,
-                'namaAgenda' => $create_agenda->nama_agenda,
-                'tanggal' => $create_agenda->tanggal
-            ], 200);
-        } else {
-            return response()->json([
-                'code' => 201,
-                'dataUsers' => 'Gagal menambahkan agenda'
-            ], 200);
-        }
-
-    }
-
-    public function UpdateAgendaSiswa(Request $request)
-    {
-        $id = $request->input("id");
-        $kode = $request->input("kode");
-        $jam_selesai = $request->input("jam_selesai");
-        $nama_agenda = $request->input("nama_agenda");
-
-        $status_update;
-
-        if ($kode == 1) {
-            $status_update = DB::table('t_agenda_siswa')
-                ->where('id', $id)
-                ->update(['jam_selesai' => $jam_selesai]);
-        } else if ($kode == 2) {
-            $status_update = DB::table('t_agenda_siswa')
-                ->where('id', $id)
-                ->update(['nama_agenda' => $nama_agenda]);
-        } else {
-            $status_update = DB::table('t_agenda_siswa')->delete($id);
-        }
-
-
-        if ($status_update !== []) {
-            return response()->json([
-                'code' => 200,
-                'message' => 'Update Agenda berhasil'
-            ], 200);
-        } else {
-            return response()->json([
-                'code' => 201,
-                'message' => 'Update Agenda gagal'
-            ], 200);
-        }
-
-    }
-
-    public function GetAgenda(Request $request)
-    {
-        $id_siswa = $request->input("id_siswa");
-
-        $dataAgenda = DB::table('t_agenda_siswa')
-            ->where('id_siswa', '=', $id_siswa)
-            ->get();
-
-        if ($dataAgenda !== []) {
-            return response()->json([
-                'code' => 200,
-                'message' => "data agenda ada",
-                'dataAgenda' => $dataAgenda
-            ], 200);
-        } else {
-            return response()->json([
-                'code' => 200,
-                'message' => "data agenda ada",
-                'dataAgenda' => []
-            ], 200);
-        }
-
-    }
-
-    public function AbsenMasuk(Request $request)
-    {
-        $id_siswa = $request->input("id_siswa");
-        $tanggal = $request->input("tanggal");
-        $jam_masuk = $request->input("jam_masuk");
-
-        $create_absensi = new MAbsensi;
-        $create_absensi->id_siswa = $id_siswa;
-        $create_absensi->tanggal = $tanggal;
-        $create_absensi->jam_masuk = $jam_masuk;
-        $create_absensi->save();
-
-        if ($create_absensi != null) {
-            return response()->json([
-                'code' => 200,
-                'dataAgenda' => 'Berhasil menambahkan absen',
-                'id' => $create_absensi->id,
-                'jamMasuk' => $create_absensi->jam_masuk,
-                'tanggal' => $create_absensi->tanggal
-            ], 200);
-        } else {
-            return response()->json([
-                'code' => 201,
-                'dataUsers' => 'Gagal menambahkan absen'
-            ], 200);
-        }
-
-    }
-
-    public function AbsenPulang(Request $request)
-    {
-        $id = $request->input("id");
-        $jam_pulang = $request->input("jam_pulang");
-
-        $status_update = DB::table('t_absensi')
-            ->where('id', $id)
-            ->update(['jam_pulang' => $jam_pulang]);
-
-        if ($status_update !== []) {
-            return response()->json([
-                'code' => 200,
-                'message' => 'Update Absen berhasil'
-            ], 200);
-        } else {
-            return response()->json([
-                'code' => 201,
-                'message' => 'Update Absen gagal'
-            ], 200);
-        }
-
-    }
-
-    public function GetAbsensi(Request $request)
-    {
-        $id_siswa = $request->input("id_siswa");
-
-        $dataAbsensi = DB::table('t_absensi')
-            ->where('id_siswa', '=', $id_siswa)
-            ->get();
-
-        if ($dataAbsensi !== []) {
-            return response()->json([
-                'code' => 200,
-                'message' => "data absensi ada",
-                'dataAbsensi' => $dataAbsensi
-            ], 200);
-        } else {
-            return response()->json([
-                'code' => 200,
-                'message' => "data absensi tidak ada",
-                'dataAbsensi' => []
-            ], 200);
-        }
-
-    }
-
-    public function CekAbsen(Request $request)
-    {
-        $id_siswa = $request->input("id_siswa");
-        $tanggal = $request->input("tanggal");
-
-        $dataAbsensi = DB::table('t_absensi')
-            ->where('id_siswa', '=', $id_siswa)
-            ->where('tanggal', '=', $tanggal)
-            ->get();
-
-        if ($dataAbsensi !== []) {
-            return response()->json([
-                'code' => 200,
-                'message' => "data absensi ada",
-                'dataAbsensi' => $dataAbsensi
-            ], 200);
-        } else {
-            return response()->json([
-                'code' => 200,
-                'message' => "data absensi tidak ada",
-                'dataAbsensi' => []
-            ], 200);
-        }
-
-    }
-
 
 }
