@@ -525,11 +525,11 @@ class ApiController extends Controller
     }
 
     /**
-     * Susun pesan jadi 3 bagian: header & footer bisa dikustomisasi admin
-     * (lewat menu Pengaturan Pesan WA, mendukung token seperti {acara}),
-     * sedangkan blok detail di tengah tetap terstruktur tetap -- mengikuti
-     * gaya "Share Agenda" ke WhatsApp di aplikasi Flutter (lihat
-     * shareAgenda() di catatan_harian_page.dart).
+     * Susun pesan jadi 3 bagian (header, isi, footer), semuanya bisa
+     * dikustomisasi admin lewat menu Pengaturan Pesan WA dengan token
+     * seperti {{acara}}. Defaultnya mengikuti gaya "Share Agenda" ke
+     * WhatsApp di aplikasi Flutter (lihat shareAgenda() di
+     * catatan_harian_page.dart).
      */
     protected function buatPesanPerwakilan(string $namaPendamping, $agenda): string
     {
@@ -537,14 +537,14 @@ class ApiController extends Controller
         $token = $this->buatTokenPesan($namaPendamping, $agenda);
 
         $header = trim(strtr($template->header ?: WaTemplate::DEFAULT_HEADER, $token));
+        $body = trim(strtr($template->body ?: WaTemplate::DEFAULT_BODY, $token));
         $footer = trim(strtr($template->footer ?: WaTemplate::DEFAULT_FOOTER, $token));
-        $detail = $this->buatDetailAgenda($namaPendamping, $agenda);
 
-        return implode("\n\n", array_filter([$header, $detail, $footer], fn ($bagian) => $bagian !== ''));
+        return implode("\n\n", array_filter([$header, $body, $footer], fn ($bagian) => $bagian !== ''));
     }
 
     /**
-     * Nilai aktual untuk tiap token yang bisa dipakai di header/footer.
+     * Nilai aktual untuk tiap token yang bisa dipakai di header/isi/footer.
      * Daftar labelnya (untuk ditampilkan ke admin) ada di WaTemplate::tokenLabels().
      */
     protected function buatTokenPesan(string $namaPendamping, $agenda): array
@@ -557,48 +557,15 @@ class ApiController extends Controller
             : '-';
 
         return [
-            '{nama_pendamping}' => $namaPendamping,
-            '{acara}' => $agenda->acara ?: '-',
-            '{tanggal}' => $tanggal,
-            '{waktu}' => $waktu,
-            '{tempat}' => $agenda->tempat ?: '-',
-            '{leading_sektor}' => $agenda->leading_sektor ?: '-',
-            '{pakaian}' => $agenda->pakaian ?: '-',
-            '{catatan}' => $agenda->keterangan_tambahan ?: '-',
+            '{{nama_pendamping}}' => $namaPendamping,
+            '{{acara}}' => $agenda->acara ?: '-',
+            '{{tanggal}}' => $tanggal,
+            '{{waktu}}' => $waktu,
+            '{{tempat}}' => $agenda->tempat ?: '-',
+            '{{leading_sektor}}' => $agenda->leading_sektor ?: '-',
+            '{{pakaian}}' => $agenda->pakaian ?: '-',
+            '{{catatan}}' => $agenda->keterangan_tambahan ?: '-',
         ];
-    }
-
-    protected function buatDetailAgenda(string $namaPendamping, $agenda): string
-    {
-        $token = $this->buatTokenPesan($namaPendamping, $agenda);
-
-        $baris = [$token['{tanggal}']];
-
-        if ($agenda->waktu_mulai) {
-            $baris[] = $token['{waktu}'];
-        }
-
-        $baris[] = $token['{acara}'];
-        $baris[] = "di " . $token['{tempat}'];
-
-        if (!empty($agenda->leading_sektor)) {
-            $baris[] = "LS: {$agenda->leading_sektor}";
-        }
-
-        $baris[] = "Pendamping:";
-        $baris[] = $namaPendamping;
-
-        if (!empty($agenda->pakaian)) {
-            $baris[] = "Pakaian:";
-            $baris[] = $agenda->pakaian;
-        }
-
-        if (!empty($agenda->keterangan_tambahan)) {
-            $baris[] = "Catatan:";
-            $baris[] = $agenda->keterangan_tambahan;
-        }
-
-        return implode("\n", $baris);
     }
 
     public function UpdateAgenda(Request $request)

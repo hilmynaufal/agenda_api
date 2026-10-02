@@ -11,6 +11,7 @@ use Filament\Forms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Actions\Action;
 use Filament\Pages\Page;
+use Illuminate\Support\HtmlString;
 
 class PengaturanPesanWA extends Page
 {
@@ -32,6 +33,7 @@ class PengaturanPesanWA extends Page
 
         $this->form->fill([
             'header' => $template->header ?: WaTemplate::DEFAULT_HEADER,
+            'body' => $template->body ?: WaTemplate::DEFAULT_BODY,
             'footer' => $template->footer ?: WaTemplate::DEFAULT_FOOTER,
             'pendamping_test_id' => null,
         ]);
@@ -50,21 +52,27 @@ class PengaturanPesanWA extends Page
 
         return [
             Forms\Components\Section::make('Template Pesan')
-                ->description('Header dan footer dikirim mengapit detail agenda (acara, tanggal, tempat, dst) yang formatnya sudah baku. Boleh dikosongkan untuk pakai bawaan sistem.')
+                ->description('Header, isi, dan footer semuanya bebas diedit dan boleh memakai token seperti {{acara}} atau {{pakaian}}. Boleh dikosongkan untuk pakai bawaan sistem.')
                 ->schema([
                     Forms\Components\Textarea::make('header')
                         ->label('Header')
                         ->rows(4)
                         ->reactive()
                         ->placeholder(WaTemplate::DEFAULT_HEADER),
+                    Forms\Components\Textarea::make('body')
+                        ->label('Isi')
+                        ->helperText('Detail agenda. Tiap baris bebas ditulis ulang, mis. "Diharap menggunakan pakaian {{pakaian}} untuk acara tersebut".')
+                        ->rows(10)
+                        ->reactive()
+                        ->placeholder(WaTemplate::DEFAULT_BODY),
                     Forms\Components\Textarea::make('footer')
                         ->label('Footer')
                         ->rows(3)
                         ->reactive()
                         ->placeholder(WaTemplate::DEFAULT_FOOTER),
                     Forms\Components\Placeholder::make('token_help')
-                        ->label('Token yang bisa dipakai di Header/Footer')
-                        ->content(new \Illuminate\Support\HtmlString($daftarToken)),
+                        ->label('Token yang bisa dipakai di Header/Isi/Footer')
+                        ->content(new HtmlString($daftarToken)),
                 ]),
 
             Forms\Components\Section::make('Pratinjau')
@@ -73,9 +81,9 @@ class PengaturanPesanWA extends Page
                     Forms\Components\Placeholder::make('preview')
                         ->label(null)
                         ->content(function (Closure $get) {
-                            $pesan = $this->rangkaiPesanContoh('Budi Santoso', $get('header'), $get('footer'));
+                            $pesan = $this->rangkaiPesanContoh('Budi Santoso', $get('header'), $get('body'), $get('footer'));
 
-                            return new \Illuminate\Support\HtmlString(
+                            return new HtmlString(
                                 '<pre class="whitespace-pre-wrap text-sm bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border">' . e($pesan) . '</pre>'
                             );
                         }),
@@ -106,26 +114,23 @@ class PengaturanPesanWA extends Page
     }
 
     /**
-     * Rangkai pesan lengkap (header + detail + footer) memakai data agenda
+     * Rangkai pesan lengkap (header + isi + footer) memakai data agenda
      * contoh -- dipakai bareng oleh Pratinjau (live, dari form state) dan
      * Kirim Contoh (dari state yang sudah disubmit).
      */
-    protected function rangkaiPesanContoh(string $namaPendamping, ?string $header, ?string $footer): string
+    protected function rangkaiPesanContoh(string $namaPendamping, ?string $header, ?string $body, ?string $footer): string
     {
         $controller = new ApiController();
         $buatToken = new \ReflectionMethod($controller, 'buatTokenPesan');
         $buatToken->setAccessible(true);
-        $buatDetail = new \ReflectionMethod($controller, 'buatDetailAgenda');
-        $buatDetail->setAccessible(true);
 
-        $agendaContoh = $this->agendaContoh();
-        $token = $buatToken->invoke($controller, $namaPendamping, $agendaContoh);
+        $token = $buatToken->invoke($controller, $namaPendamping, $this->agendaContoh());
 
         $headerJadi = trim(strtr($header ?: WaTemplate::DEFAULT_HEADER, $token));
+        $bodyJadi = trim(strtr($body ?: WaTemplate::DEFAULT_BODY, $token));
         $footerJadi = trim(strtr($footer ?: WaTemplate::DEFAULT_FOOTER, $token));
-        $detail = $buatDetail->invoke($controller, $namaPendamping, $agendaContoh);
 
-        return implode("\n\n", array_filter([$headerJadi, $detail, $footerJadi], fn ($b) => $b !== ''));
+        return implode("\n\n", array_filter([$headerJadi, $bodyJadi, $footerJadi], fn ($b) => $b !== ''));
     }
 
     protected function getActions(): array
@@ -148,6 +153,7 @@ class PengaturanPesanWA extends Page
 
         $template = WaTemplate::current();
         $template->header = $state['header'] ?: null;
+        $template->body = $state['body'] ?: null;
         $template->footer = $state['footer'] ?: null;
         $template->save();
 
@@ -182,7 +188,12 @@ class PengaturanPesanWA extends Page
             return;
         }
 
-        $pesan = $this->rangkaiPesanContoh($pendamping->nama, $state['header'] ?? null, $state['footer'] ?? null);
+        $pesan = $this->rangkaiPesanContoh(
+            $pendamping->nama,
+            $state['header'] ?? null,
+            $state['body'] ?? null,
+            $state['footer'] ?? null,
+        );
 
         $berhasil = (new FonnteService())->send($pendamping->no_hp, $pesan, [
             'pendamping_id' => $pendamping->id,
