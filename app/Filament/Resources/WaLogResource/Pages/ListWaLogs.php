@@ -8,4 +8,6 @@ use Filament\Resources\Pages\ListRecords;
 class ListWaLogs extends ListRecords
 {
     protected static string $resource = WaLogResource::class;
+
+    protected static ?string $title = 'Log Notifikasi WA';
 }

@@ -22,6 +22,11 @@ class WaLogResource extends Resource
 
     protected static ?string $modelLabel = 'Log Notifikasi WA';
 
+    protected static ?string $pluralModelLabel = 'Log Notifikasi WA';
+
+    // Str::headline() mengubah "WA" jadi "Wa", jadi breadcrumb diset eksplisit.
+    protected static ?string $breadcrumb = 'Log Notifikasi WA';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -69,8 +74,10 @@ class WaLogResource extends Resource
                         0 => 'Gagal',
                     ])
                     ->colors([
-                        'success' => 1,
-                        'danger' => 0,
+                        // status bertipe boolean, jadi dicocokkan lewat closure
+                        // (perbandingan strict true === 1 tidak pernah cocok).
+                        'success' => fn ($state) => (bool) $state === true,
+                        'danger' => fn ($state) => (bool) $state === false,
                     ]),
             ])
             ->defaultSort('created_at', 'desc')

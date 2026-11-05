@@ -5,7 +5,7 @@ namespace App\Filament\Pages;
 use App\Http\Controllers\Api\ApiController;
 use App\Models\MPendamping;
 use App\Models\WaTemplate;
-use App\Services\FonnteService;
+use App\Services\WhatsAppService;
 use Closure;
 use Filament\Forms;
 use Filament\Notifications\Notification;
@@ -62,7 +62,7 @@ class PengaturanPesanWA extends Page
                     Forms\Components\Textarea::make('body')
                         ->label('Isi')
                         ->helperText('Detail agenda. Tiap baris bebas ditulis ulang, mis. "Diharap menggunakan pakaian {{pakaian}} untuk acara tersebut".')
-                        ->rows(10)
+                        ->rows(12)
                         ->reactive()
                         ->placeholder(WaTemplate::DEFAULT_BODY),
                     Forms\Components\Textarea::make('footer')
@@ -195,7 +195,7 @@ class PengaturanPesanWA extends Page
             $state['footer'] ?? null,
         );
 
-        $berhasil = (new FonnteService())->send($pendamping->no_hp, $pesan, [
+        $berhasil = WhatsAppService::make()->send($pendamping->no_hp, $pesan, [
             'pendamping_id' => $pendamping->id,
             'nama_pendamping' => $pendamping->nama,
         ]);

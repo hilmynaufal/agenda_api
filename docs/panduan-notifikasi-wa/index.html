@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panduan Notifikasi WA</title>
+<meta name="description" content="Panduan visual notifikasi WhatsApp untuk perwakilan agenda dan pengaturan isi pesannya di Siagan Bedas.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBFCFC; --surface:#FFFFFF; --ink:#0B2628; --ink-2:#425A5C; --line:#E1E6E6;
+  --teal:#088C91; --teal-deep:#0F686B; --teal-wash:#DDEEEE; --fog:#F0F4F4;
+  --amber-wash:#FFF3D6; --amber-ink:#7A5800; --amber:#FFC107;
+  --violet-wash:#F1E3F6; --violet-ink:#6E3384;
+  --green-wash:#E4F2E5; --green-ink:#245F27;
+  --red-wash:#FBE7E5; --red-ink:#8C1E18;
+  --shadow:0 1px 2px rgba(11,38,40,.06),0 1px 3px rgba(11,38,40,.10);
+  --shadow-lg:0 2px 4px rgba(11,38,40,.08),0 8px 24px rgba(11,38,40,.10);
+  --radius:10px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1617; --surface:#112123; --ink:#E7F1F1; --ink-2:#A9BFC0; --line:#233B3D;
+    --teal:#3FB6BB; --teal-deep:#7FD0D3; --teal-wash:#12383A; --fog:#162A2C;
+    --amber-wash:#3A2E0B; --amber-ink:#FFD76A; --violet-wash:#31203A; --violet-ink:#D9A8EA;
+    --green-wash:#14301A; --green-ink:#8FD596; --red-wash:#3B1815; --red-ink:#FF9C93;
+    --shadow:0 1px 2px rgba(0,0,0,.4); --shadow-lg:0 8px 24px rgba(0,0,0,.45);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B1617; --surface:#112123; --ink:#E7F1F1; --ink-2:#A9BFC0; --line:#233B3D;
+  --teal:#3FB6BB; --teal-deep:#7FD0D3; --teal-wash:#12383A; --fog:#162A2C;
+  --amber-wash:#3A2E0B; --amber-ink:#FFD76A; --violet-wash:#31203A; --violet-ink:#D9A8EA;
+  --green-wash:#14301A; --green-ink:#8FD596; --red-wash:#3B1815; --red-ink:#FF9C93;
+  --shadow:0 1px 2px rgba(0,0,0,.4); --shadow-lg:0 8px 24px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Poppins,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.7}
+img{max-width:100%;height:auto;display:block}
+a{color:var(--teal-deep)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+@media (min-width:720px){.wrap{padding:0 28px}}
+
+/* ---------- header ---------- */
+.top{padding:40px 0 28px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px;color:var(--teal-deep);font-weight:600;font-size:14px;letter-spacing:.02em}
+.brand img{width:40px;height:40px;border-radius:10px}
+h1{font-size:clamp(28px,5vw,42px);line-height:1.2;margin:20px 0 14px;font-weight:700;letter-spacing:-.01em;max-width:24ch}
+.lead{font-size:clamp(16px,2.2vw,19px);color:var(--ink-2);max-width:62ch;margin:0}
+.meta{margin:18px 0 0;font-size:13px;color:var(--ink-2)}
+.roles{list-style:none;padding:0;margin:26px 0 0;display:grid;gap:10px;max-width:720px}
+.roles li{display:flex;gap:12px;align-items:baseline;font-size:15px}
+.chip{flex:none;display:inline-block;padding:2px 12px;border-radius:999px;font-size:12px;font-weight:600;line-height:1.7}
+.chip.teal{background:var(--teal-wash);color:var(--teal-deep)}
+.chip.violet{background:var(--violet-wash);color:var(--violet-ink)}
+.chip.amber{background:var(--amber-wash);color:var(--amber-ink)}
+.chip.green{background:var(--green-wash);color:var(--green-ink)}
+.chip.red{background:var(--red-wash);color:var(--red-ink)}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 0;padding:0;list-style:none}
+.toc a{display:inline-block;padding:6px 14px;border-radius:999px;background:var(--fog);color:var(--ink);text-decoration:none;font-size:13px;font-weight:500;border:1px solid var(--line)}
+.toc a:hover,.toc a:focus-visible{background:var(--teal-wash);color:var(--teal-deep)}
+
+/* ---------- sections ---------- */
+section{padding:56px 0 8px}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-deep);margin:0 0 6px}
+h2{font-size:clamp(24px,3.4vw,32px);line-height:1.25;margin:0 0 14px;font-weight:700;letter-spacing:-.005em}
+h3{font-size:19px;line-height:1.35;margin:36px 0 10px;font-weight:600}
+p{margin:0 0 14px;max-width:68ch}
+.prose{max-width:68ch}
+ul.plain{margin:0 0 14px;padding-left:20px;max-width:68ch}
+ul.plain li{margin:4px 0}
+.note{margin:18px 0;padding:14px 18px;border-radius:var(--radius);background:var(--teal-wash);color:var(--ink);max-width:72ch;font-size:15px}
+.note strong{color:var(--teal-deep)}
+.note.warn{background:var(--amber-wash)}
+.note.warn strong{color:var(--amber-ink)}
+code{font-family:var(--mono);font-size:.88em;background:var(--fog);border:1px solid var(--line);padding:1px 6px;border-radius:6px;white-space:nowrap}
+
+/* ---------- figures ---------- */
+figure{margin:22px 0}
+.shot{border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow-lg);background:#fff}
+.shot img{width:100%}
+.shot.narrow{max-width:560px}
+.shot.mid{max-width:820px}
+figcaption{margin-top:10px;font-size:13px;color:var(--ink-2);max-width:72ch}
+.fig-row{display:grid;gap:22px}
+@media (min-width:900px){.fig-row.two{grid-template-columns:1fr 1fr;align-items:start}}
+
+/* numbered markers (sama dengan penanda pada screenshot) */
+.n{display:inline-flex;align-items:center;justify-content:center;flex:none;width:26px;height:26px;border-radius:50%;background:#0B2628;color:#fff;font-size:13px;font-weight:600;line-height:1;border:2.5px solid #FFC107;box-sizing:border-box}
+ol.legend{list-style:none;margin:16px 0 8px;padding:0;display:grid;gap:10px;max-width:760px}
+ol.legend li{display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.55}
+ol.legend li .n{margin-top:1px}
+ol.legend b{font-weight:600}
+
+/* ---------- alur ---------- */
+.flow{list-style:none;margin:26px 0 8px;padding:0;display:grid;gap:14px;counter-reset:f}
+.flow li{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 16px 16px 16px;box-shadow:var(--shadow)}
+.flow .tag{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-deep);margin-bottom:6px;display:block}
+.flow .t{font-weight:600;font-size:15px;line-height:1.4;display:block;margin-bottom:4px}
+.flow .d{font-size:13.5px;line-height:1.55;color:var(--ink-2);display:block}
+.flow .n{margin-bottom:10px}
+.flow li:not(:last-child)::after{content:"";position:absolute;left:28px;bottom:-12px;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid var(--teal);z-index:1}
+@media (min-width:900px){
+  .flow{grid-template-columns:repeat(5,1fr);gap:18px}
+  .flow li:not(:last-child)::after{left:auto;right:-16px;bottom:auto;top:34px;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:9px solid var(--teal);border-right:0}
+}
+.skip{margin:22px 0 0;display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;font-size:14px;max-width:80ch}
+.skip b{font-weight:600;margin-right:4px}
+
+/* ---------- struktur pesan ---------- */
+.msg{max-width:560px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);background:var(--surface);margin:22px 0}
+.msg .blk{display:grid;grid-template-columns:96px 1fr;gap:0;font-size:14px;line-height:1.6}
+.msg .lab{padding:12px 14px;font-size:12px;font-weight:600;letter-spacing:.03em}
+.msg .txt{padding:12px 16px;white-space:pre-line;font-family:var(--mono);font-size:12.5px;line-height:1.65}
+.msg .b1 .lab,.msg .b1 .txt{background:var(--teal-wash)}
+.msg .b2 .lab,.msg .b2 .txt{background:var(--fog)}
+.msg .b3 .lab,.msg .b3 .txt{background:var(--amber-wash)}
+.msg .b1 .lab{color:var(--teal-deep)} .msg .b3 .lab{color:var(--amber-ink)} .msg .b2 .lab{color:var(--ink-2)}
+.msg .txt mark{background:none;color:var(--teal-deep);font-weight:600}
+@media (max-width:520px){.msg .blk{grid-template-columns:1fr}.msg .lab{padding-bottom:0}}
+
+/* ---------- tabel responsif ---------- */
+.tbl{width:100%;border-collapse:separate;border-spacing:0;margin:18px 0;font-size:14.5px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--surface)}
+.tbl th{background:var(--fog);text-align:left;font-weight:600;font-size:12.5px;letter-spacing:.03em;padding:10px 14px;color:var(--ink-2)}
+.tbl td{padding:12px 14px;vertical-align:top;border-top:1px solid var(--line);line-height:1.55}
+.tbl.tok td:first-child{white-space:nowrap}
+@media (max-width:680px){
+  .tbl,.tbl tbody,.tbl tr,.tbl td{display:block;width:100%}
+  .tbl thead{display:none}
+  .tbl tr{border-top:1px solid var(--line);padding:10px 0}
+  .tbl tr:first-child{border-top:0}
+  .tbl td{border:0;padding:4px 14px}
+  .tbl.tok td:first-child{white-space:normal}
+  .tbl td::before{content:attr(data-label);display:block;font-size:11.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}
+}
+
+/* ---------- contoh sebelum/sesudah ---------- */
+.ba{display:grid;gap:14px;margin:18px 0}
+@media (min-width:760px){.ba{grid-template-columns:1fr 1fr}}
+.ba div{border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;background:var(--surface);box-shadow:var(--shadow)}
+.ba small{display:block;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);margin-bottom:6px}
+.ba p{margin:0;font-size:14.5px;max-width:none}
+.ba .res{background:var(--green-wash)}
+
+/* ---------- mockup mobile ---------- */
+.phones{display:grid;gap:40px 36px;justify-content:center;margin:30px 0 8px;grid-template-columns:1fr;justify-items:center}
+@media (min-width:640px){.phones{grid-template-columns:repeat(2,max-content)}}
+.phones figure{margin:0;display:flex;flex-direction:column;align-items:center}
+.phones figcaption{max-width:290px;text-align:center}
+.phones figcaption b{display:block;color:var(--ink);font-weight:600;font-size:14px;margin-bottom:2px}
+.mock-note{font-size:12.5px;color:var(--ink-2);text-align:center;margin:6px auto 0}
+
+/*U*/
+.phone{--pf:16px;width:calc(var(--pf)*17);height:calc(var(--pf)*35);border-radius:calc(var(--pf)*2.6);padding:calc(var(--pf)*.55);background:#182022;position:relative;box-shadow:0 calc(var(--pf)*.6) calc(var(--pf)*1.8) rgba(11,38,40,.28),inset 0 0 0 calc(var(--pf)*.08) #3a4648;flex:none}
+.phone .scr{height:100%;border-radius:calc(var(--pf)*2.1);overflow:hidden;position:relative;background:#fff;color:#1C1B1F;font-family:Poppins,system-ui,sans-serif;line-height:1.35;font-size:calc(var(--pf)*1)}
+.phone .cam{position:absolute;top:calc(var(--pf)*.7);left:50%;transform:translateX(-50%);width:calc(var(--pf)*.85);height:calc(var(--pf)*.85);border-radius:50%;background:#182022;z-index:5}
+.sb{height:calc(var(--pf)*2.3);display:flex;align-items:center;justify-content:space-between;padding:0 calc(var(--pf)*1.4);font-size:calc(var(--pf)*.66);font-weight:600;position:relative;z-index:4}
+.sb svg{width:calc(var(--pf)*.95);height:calc(var(--pf)*.95);margin-left:calc(var(--pf)*.25);fill:currentColor}
+.sb span{display:inline-flex;align-items:center}
+.phone .scr.teal-bg{background:#00686C;color:#fff}
+.sb.light{color:#fff}
+.appbar{display:flex;align-items:center;gap:calc(var(--pf)*.9);padding:0 calc(var(--pf)*1.1);height:calc(var(--pf)*3);font-weight:700;font-size:calc(var(--pf)*1.02)}
+.appbar svg{width:calc(var(--pf)*1.3);height:calc(var(--pf)*1.3);fill:#fff}
+.sheet{margin:calc(var(--pf)*.9) calc(var(--pf)*1) 0;background:#fff;color:#1C1B1F;border-radius:calc(var(--pf)*.8);padding:calc(var(--pf)*1.1) calc(var(--pf)*1.2) calc(var(--pf)*1.3)}
+.f{margin-bottom:calc(var(--pf)*.8)}
+.f small{display:block;font-size:calc(var(--pf)*.58);font-weight:300;color:#49454F;line-height:1.3}
+.f b{display:block;font-size:calc(var(--pf)*.98);font-weight:300;color:#1C1B1F;line-height:1.3}
+.eb{display:flex;align-items:center;justify-content:center;gap:calc(var(--pf)*.5);height:calc(var(--pf)*2.7);border-radius:calc(var(--pf)*1.35);color:#fff;font-size:calc(var(--pf)*.78);font-weight:500;margin-top:calc(var(--pf)*.55);box-shadow:0 calc(var(--pf)*.1) calc(var(--pf)*.25) rgba(0,0,0,.3);position:relative}
+.eb svg{width:calc(var(--pf)*1.05);height:calc(var(--pf)*1.05);fill:#fff}
+.eb.blue{background:#42A5F5}.eb.teal{background:#00696C}.eb.red{background:#B3261E}.eb.purple{background:#BA68C8}
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:2}
+.dlg{position:absolute;left:calc(var(--pf)*1);right:calc(var(--pf)*1);top:calc(var(--pf)*5.7);z-index:3;background:#F1F6F6;border-radius:calc(var(--pf)*1.8);padding:calc(var(--pf)*1.5) calc(var(--pf)*1.4) calc(var(--pf)*1.1);box-shadow:0 calc(var(--pf)*.5) calc(var(--pf)*1.5) rgba(0,0,0,.35)}
+.dlg h4{margin:0 0 calc(var(--pf)*.5);font-size:calc(var(--pf)*1.08);font-weight:400;color:#1C1B1F}
+.dlg p{margin:0 0 calc(var(--pf)*.9);font-size:calc(var(--pf)*.66);color:#49454F;line-height:1.4;max-width:none}
+.dd{position:relative;background:#EEEEEE;border-radius:calc(var(--pf)*.65);height:calc(var(--pf)*2.6);padding:0 calc(var(--pf)*.9);display:flex;align-items:center;justify-content:space-between;font-size:calc(var(--pf)*.72);color:#1C1B1F}
+.dd i{font-style:normal;color:#757575;font-size:calc(var(--pf)*.62);position:absolute;top:calc(var(--pf)*.2);left:calc(var(--pf)*.9)}
+.dd .val{margin-top:calc(var(--pf)*.55)}
+.dd svg{width:calc(var(--pf)*1.2);height:calc(var(--pf)*1.2);fill:#49454F}
+.ddw{position:relative}
+.menu{color:#1C1B1F;position:absolute;left:0;right:0;top:calc(100% + calc(var(--pf)*.25));z-index:6;background:#fff;border-radius:calc(var(--pf)*.6);box-shadow:0 calc(var(--pf)*.3) calc(var(--pf)*1.1) rgba(0,0,0,.35);padding:calc(var(--pf)*.35) 0}
+.menu div{height:calc(var(--pf)*2.1);display:flex;align-items:center;padding:0 calc(var(--pf)*.9);font-size:calc(var(--pf)*.72)}
+.menu .sel{background:#DDEEEE;font-weight:500}
+.hint{font-size:calc(var(--pf)*.58);color:#79747E;margin:calc(var(--pf)*.9) 0 calc(var(--pf)*.3)}
+.tf{background:#EEEEEE;border-radius:calc(var(--pf)*.65);height:calc(var(--pf)*2.4);padding:0 calc(var(--pf)*.9);display:flex;align-items:center;font-size:calc(var(--pf)*.72);color:#1C1B1F}
+.dbtn{display:flex;justify-content:flex-end;gap:calc(var(--pf)*1.3);margin-top:calc(var(--pf)*1);font-size:calc(var(--pf)*.7);font-weight:500;color:#00696C}
+.dbtn span:last-child{color:#49454F}
+.snack{position:absolute;left:calc(var(--pf)*.9);right:calc(var(--pf)*.9);bottom:calc(var(--pf)*1.1);z-index:3;background:#00696C;color:#fff;border-radius:calc(var(--pf)*.6);padding:calc(var(--pf)*.8) calc(var(--pf)*1);display:flex;align-items:center;gap:calc(var(--pf)*.8);box-shadow:0 calc(var(--pf)*.3) calc(var(--pf)*.9) rgba(0,0,0,.4);border:calc(var(--pf)*.08) solid rgba(255,255,255,.35)}
+.snack svg{width:calc(var(--pf)*1.4);height:calc(var(--pf)*1.4);fill:#fff;flex:none}
+.snack b{display:block;font-size:calc(var(--pf)*.72);font-weight:600}
+.snack small{display:block;font-size:calc(var(--pf)*.62);font-weight:300}
+.mk{position:absolute;z-index:8;width:calc(var(--pf)*1.9);height:calc(var(--pf)*1.9);border-radius:50%;background:#0B2628;color:#fff;font-size:calc(var(--pf)*.8);font-weight:600;line-height:calc(var(--pf)*1.5);text-align:center;border:calc(var(--pf)*.18) solid #FFC107;box-sizing:border-box;box-shadow:0 calc(var(--pf)*.1) calc(var(--pf)*.4) rgba(11,38,40,.4)}
+.ring{position:absolute;z-index:7;border:calc(var(--pf)*.2) solid #FFC107;border-radius:calc(var(--pf)*.9);pointer-events:none;box-shadow:0 0 0 calc(var(--pf)*.1) rgba(255,255,255,.7)}
+/* WhatsApp */
+.wa{background:#EAE3D9;height:100%;display:flex;flex-direction:column}
+.wa-top{background:#0F5E57;color:#fff;display:flex;align-items:center;gap:calc(var(--pf)*.8);padding:calc(var(--pf)*.55) calc(var(--pf)*1) calc(var(--pf)*.65);font-size:calc(var(--pf)*.9)}
+.wa-top svg{width:calc(var(--pf)*1.2);height:calc(var(--pf)*1.2);fill:#fff}
+.av{width:calc(var(--pf)*2.3);height:calc(var(--pf)*2.3);border-radius:50%;background:#DDEEEE;color:#0B2628;font-weight:700;font-size:calc(var(--pf)*.8);display:flex;align-items:center;justify-content:center}
+.wa-top b{display:block;font-size:calc(var(--pf)*.82);font-weight:600;line-height:1.2}
+.wa-top small{display:block;font-size:calc(var(--pf)*.55);opacity:.85;line-height:1.2}
+.wa-body{flex:1;padding:calc(var(--pf)*.9) calc(var(--pf)*.8);overflow:hidden}
+.day{display:table;margin:0 auto calc(var(--pf)*.8);background:#fff9;border-radius:calc(var(--pf)*.5);padding:calc(var(--pf)*.15) calc(var(--pf)*.8);font-size:calc(var(--pf)*.52);color:#54656f}
+.bub{background:#fff;border-radius:0 calc(var(--pf)*.7) calc(var(--pf)*.7) calc(var(--pf)*.7);padding:calc(var(--pf)*.6) calc(var(--pf)*.8) calc(var(--pf)*.4);font-size:calc(var(--pf)*.6);line-height:1.36;white-space:pre-line;max-width:94%;box-shadow:0 calc(var(--pf)*.05) calc(var(--pf)*.15) rgba(0,0,0,.25);color:#111B21}
+.bub time{display:block;text-align:right;font-size:calc(var(--pf)*.46);color:#667781;margin-top:calc(var(--pf)*.15)}
+.wa-in{background:#F0F2F5;padding:calc(var(--pf)*.6) calc(var(--pf)*.8) calc(var(--pf)*.9);display:flex;gap:calc(var(--pf)*.6);align-items:center}
+.wa-in div{flex:1;background:#fff;border-radius:calc(var(--pf)*1.2);height:calc(var(--pf)*1.9);padding:0 calc(var(--pf)*.9);display:flex;align-items:center;font-size:calc(var(--pf)*.58);color:#8696A0}
+.wa-in span{width:calc(var(--pf)*1.9);height:calc(var(--pf)*1.9);border-radius:50%;background:#0F5E57}
+/*ENDU*/
+
+/* ---------- footer ---------- */
+footer{margin-top:64px;padding:28px 0 56px;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink-2)}
+footer p{max-width:70ch}
+
+/* ---------- cetak (PDF) ---------- */
+@media print{
+  @page{size:A4;margin:13mm 12mm}
+  body{font-size:12.5px;line-height:1.6;background:#fff}
+  .wrap{max-width:none;padding:0}
+  .toc{display:none}
+  .top{padding-top:0}
+  section{padding-top:30px;break-inside:auto}
+  h2,h3{break-after:avoid}
+  figure,.msg,.ba,.tbl tr,.note,.flow li,ol.legend li{break-inside:avoid}
+  .shot{box-shadow:none}
+  .phones{grid-template-columns:repeat(2,max-content);gap:26px 28px}
+  .phone{--pf:14px}
+  .flow{grid-template-columns:repeat(5,1fr)}
+  .flow li:not(:last-child)::after{left:auto;right:-16px;bottom:auto;top:34px;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:9px solid var(--teal);border-right:0}
+  .tbl,.tbl tbody,.tbl tr,.tbl td{display:revert}
+  .tbl thead{display:table-header-group}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><img src="img/favicon.png" alt="" width="40" height="40"><span>Siagan Bedas &middot; Panduan Admin dan Ajudan</span></div>
+    <h1>Notifikasi WhatsApp untuk Perwakilan Agenda</h1>
+    <p class="lead">Saat ajudan mewakilkan sebuah agenda, perwakilan yang ditunjuk langsung menerima pesan WhatsApp berisi detail acara. Panduan ini menjelaskan alurnya, cara menyiapkan data perwakilan, dan cara mengubah isi pesan sesuai kebutuhan.</p>
+    <p class="meta">Diperbarui 5 Oktober 2026. Data pada gambar adalah contoh, nomor telepon disamarkan.</p>
+    <ul class="roles" aria-label="Peran yang terlibat">
+      <li><span class="chip teal">Ajudan</span><span>Menekan tombol Wakilkan pada aplikasi Siagan Bedas.</span></li>
+      <li><span class="chip violet">Admin</span><span>Mengelola daftar perwakilan dan isi pesan lewat admin panel.</span></li>
+      <li><span class="chip green">Perwakilan</span><span>Menerima pesan WhatsApp berisi detail acara yang diwakilinya.</span></li>
+    </ul>
+    <ul class="toc" aria-label="Isi panduan">
+      <li><a href="#alur">1. Alur singkat</a></li>
+      <li><a href="#siapkan">2. Siapkan perwakilan</a></li>
+      <li><a href="#aplikasi">3. Wakilkan di aplikasi</a></li>
+      <li><a href="#pesan">4. Atur isi pesan</a></li>
+      <li><a href="#pantau">5. Pantau pengiriman</a></li>
+      <li><a href="#masalah">6. Jika pesan tidak terkirim</a></li>
+    </ul>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ================= 1 ================= -->
+<section id="alur">
+  <p class="eyebrow">Bagian 1</p>
+  <h2>Alur singkat</h2>
+  <p>Semuanya berjalan otomatis setelah ajudan menekan <b>Wakilkan</b>. Admin cukup memastikan data perwakilan dan isi pesan sudah benar.</p>
+
+  <ol class="flow">
+    <li><span class="n">1</span><span class="tag">Aplikasi</span><span class="t">Ajudan menekan Wakilkan</span><span class="d">Memilih nama perwakilan dari daftar, lalu mengonfirmasi.</span></li>
+    <li><span class="n">2</span><span class="tag">Sistem</span><span class="t">Nama dicocokkan</span><span class="d">Dicari di Master Pendamping. Harus aktif dan punya nomor HP.</span></li>
+    <li><span class="n">3</span><span class="tag">Template</span><span class="t">Pesan dirakit</span><span class="d">Header, isi, dan footer digabung dengan data agenda.</span></li>
+    <li><span class="n">4</span><span class="tag">WhatsApp</span><span class="t">Pesan dikirim</span><span class="d">Masuk ke nomor perwakilan lewat layanan Fonnte.</span></li>
+    <li><span class="n">5</span><span class="tag">Log</span><span class="t">Hasil dicatat</span><span class="d">Tampil sebagai Terkirim atau Gagal di Log Notifikasi WA.</span></li>
+  </ol>
+
+  <div class="skip">
+    <b>Pesan tidak dikirim bila:</b>
+    <span class="chip amber">status bukan Diwakilkan</span>
+    <span class="chip amber">nama belum ada di Master Pendamping</span>
+    <span class="chip amber">pendamping nonaktif</span>
+    <span class="chip amber">nomor HP kosong</span>
+  </div>
+  <p class="note"><strong>Aman untuk aplikasi lama.</strong> Versi aplikasi yang belum diperbarui tetap berjalan normal. Hanya saja, versi lama tidak mengirim nama perwakilan sehingga tidak memicu pesan WhatsApp.</p>
+</section>
+
+<!-- ================= 2 ================= -->
+<section id="siapkan">
+  <p class="eyebrow">Bagian 2 &middot; Dikerjakan admin</p>
+  <h2>Siapkan data perwakilan</h2>
+  <p>Daftar perwakilan disimpan sekali di admin panel. Nama di daftar ini yang dicocokkan dengan nama yang dipilih ajudan di aplikasi.</p>
+
+  <h3>Masuk ke admin panel</h3>
+  <p>Buka alamat admin panel (akhiran <code>/admin</code>) lalu masuk dengan email dan kata sandi akun admin.</p>
+  <figure>
+    <div class="shot narrow"><img src="img/01-login.png" alt="Halaman login admin panel Siagan Bedas"></div>
+    <figcaption>Halaman masuk admin panel.</figcaption>
+  </figure>
+
+  <h3>Kenali menu</h3>
+  <figure>
+    <div class="shot"><img src="img/02-menu.png" alt="Menu samping admin panel dengan tiga menu penting ditandai"></div>
+    <figcaption>Tiga menu yang dipakai pada panduan ini.</figcaption>
+  </figure>
+  <ol class="legend">
+    <li><span class="n">1</span><span><b>Pendamping (Perwakilan)</b>, tempat mengelola daftar nama dan nomor WhatsApp.</span></li>
+    <li><span class="n">2</span><span><b>Pengaturan Pesan WA</b>, tempat mengubah isi pesan.</span></li>
+    <li><span class="n">3</span><span><b>Log Notifikasi WA</b>, riwayat semua pesan yang dikirim sistem.</span></li>
+  </ol>
+
+  <h3>Daftar perwakilan</h3>
+  <figure>
+    <div class="shot"><img src="img/03-pendamping-list.png" alt="Daftar pendamping dengan kolom nama, jabatan, nomor HP, status aktif, dan tombol aksi"></div>
+    <figcaption>Contoh daftar perwakilan. Nomor telepon disamarkan.</figcaption>
+  </figure>
+  <ol class="legend">
+    <li><span class="n">1</span><span><b>New Pendamping</b> membuka formulir untuk menambah perwakilan baru.</span></li>
+    <li><span class="n">2</span><span><b>Nama</b> harus sama dengan nama yang dipilih ajudan di aplikasi. Huruf besar dan kecil tidak dibedakan.</span></li>
+    <li><span class="n">3</span><span><b>No. HP</b> boleh diawali 08 atau 62, sistem merapikannya saat mengirim.</span></li>
+    <li><span class="n">4</span><span><b>Aktif</b>. Ikon silang merah berarti nonaktif, perwakilan itu tidak akan menerima pesan namun datanya tetap tersimpan.</span></li>
+    <li><span class="n">5</span><span><b>Test WA</b> mengirim pesan uji ke nomor di baris tersebut.</span></li>
+  </ol>
+
+  <h3>Tambah atau ubah perwakilan</h3>
+  <figure>
+    <div class="shot"><img src="img/05-pendamping-form.png" alt="Formulir tambah pendamping dengan kolom nama, jabatan, nomor HP, dan sakelar aktif"></div>
+    <figcaption>Formulir perwakilan. Isian pada gambar hanya contoh dan belum disimpan.</figcaption>
+  </figure>
+  <ol class="legend">
+    <li><span class="n">1</span><span><b>Nama</b> (wajib). Tulis persis seperti yang akan dipilih di aplikasi.</span></li>
+    <li><span class="n">2</span><span><b>Jabatan</b> (opsional), membantu membedakan nama yang mirip.</span></li>
+    <li><span class="n">3</span><span><b>No. HP (WhatsApp)</b> (wajib). Pastikan nomornya aktif dan terdaftar di WhatsApp.</span></li>
+    <li><span class="n">4</span><span><b>Aktif</b>. Matikan untuk berhenti mengirim pesan tanpa menghapus data.</span></li>
+    <li><span class="n">5</span><span><b>Create</b> menyimpan perwakilan baru.</span></li>
+  </ol>
+
+  <h3>Uji nomor dengan Test WA</h3>
+  <p>Sebelum dipakai sungguhan, pastikan nomor benar-benar menerima pesan. Tekan <b>Test WA</b> pada baris perwakilan, lalu periksa nama dan nomor pada jendela konfirmasi.</p>
+  <figure>
+    <div class="shot"><img src="img/04-test-wa-modal.png" alt="Jendela konfirmasi Test WA berisi nama dan nomor tujuan dengan tombol Cancel dan Confirm"></div>
+    <figcaption>Jendela konfirmasi Test WA. Pesan baru dikirim setelah tombol <b>Confirm</b> ditekan, <b>Cancel</b> membatalkan.</figcaption>
+  </figure>
+  <p class="note warn"><strong>Perhatian.</strong> Confirm mengirim pesan WhatsApp sungguhan ke nomor tersebut dan memakai kuota layanan. Gunakan seperlunya.</p>
+</section>
+
+<!-- ================= 3 ================= -->
+<section id="aplikasi">
+  <p class="eyebrow">Bagian 3 &middot; Dikerjakan ajudan</p>
+  <h2>Mewakilkan agenda di aplikasi</h2>
+  <p>Cukup empat langkah. Pilih nama dari daftar supaya penulisannya sama persis dengan data di admin panel.</p>
+
+  <div class="phones">
+    <figure>
+      <div class="phone"><div class="cam"></div><div class="scr teal-bg">
+        <div class="sb light"><span>09:41</span><span><svg viewBox="0 0 24 24"><path d="M2 22h20V2z"/></svg><svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg><svg viewBox="0 0 24 24"><path d="M17 4h-3V2h-4v2H7v18h10V4z"/></svg></span></div>
+        <div class="appbar"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Detail Agenda</div>
+        <div class="sheet">
+          <div class="f"><small>Tempat Agenda</small><b>Ruang Rapat Bupati</b></div>
+          <div class="f"><small>Waktu</small><b>09:00 - Selesai</b></div>
+          <div class="f"><small>Pakaian</small><b>PSL</b></div>
+          <div class="f"><small>Status Kehadiran</small><b>Belum Dikonfirmasi</b></div>
+          <div class="eb blue"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Edit Agenda</div>
+          <div class="eb teal"><svg viewBox="0 0 24 24"><path d="M21 3H3c-1.11 0-2 .89-2 2v14c0 1.11.89 2 2 2h18c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2zm0 16.02H3V4.98h18v14.04zM10 12H8l4-4 4 4h-2v4h-4v-4z"/></svg>Hadiri</div>
+          <div class="eb red"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>Hapus Agenda</div>
+          <div class="eb purple"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Wakilkan<span class="ring" style="left:calc(var(--pf)*-.35);right:calc(var(--pf)*-.35);top:calc(var(--pf)*-.35);bottom:calc(var(--pf)*-.35);border-radius:calc(var(--pf)*1.7)"></span><span class="mk" style="right:calc(var(--pf)*-.2);top:calc(var(--pf)*-1)">1</span></div>
+        </div>
+      </div></div>
+      <figcaption><b>1. Buka detail agenda</b>Tekan tombol ungu <b style="display:inline;font-weight:600">Wakilkan</b>.</figcaption>
+    </figure>
+
+    <figure>
+      <div class="phone"><div class="cam"></div><div class="scr teal-bg">
+        <div class="sb light"><span>09:41</span><span><svg viewBox="0 0 24 24"><path d="M2 22h20V2z"/></svg><svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg><svg viewBox="0 0 24 24"><path d="M17 4h-3V2h-4v2H7v18h10V4z"/></svg></span></div>
+        <div class="appbar"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Detail Agenda</div>
+        <div class="sheet"><div class="f"><small>Tempat Agenda</small><b>Ruang Rapat Bupati</b></div></div>
+        <div class="dim"></div>
+        <div class="dlg">
+          <h4>Wakilkan Agenda</h4>
+          <p>Mohon masukan perwakilan</p>
+          <div class="ddw"><div class="dd"><i>Pilih dari daftar</i><span class="val">Budi Santoso</span><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg><span class="ring" style="left:calc(var(--pf)*-.35);right:calc(var(--pf)*-.35);top:calc(var(--pf)*-.35);bottom:calc(var(--pf)*-.35);border-radius:calc(var(--pf)*1)"></span><span class="mk" style="right:calc(var(--pf)*-.5);top:calc(var(--pf)*-1)">1</span></div><div class="menu"><div class="sel">Budi Santoso</div><div>Siti Aminah</div><div>Agus Pranoto</div></div></div>
+          <div class="hint">Tidak ada di daftar? Isi manual di bawah:</div>
+          <div class="tf">Budi Santoso</div>
+          <div class="dbtn"><span>Wakilkan</span><span>Batal</span></div>
+        </div>
+              </div></div>
+      <figcaption><b>2. Pilih perwakilan</b>Buka daftar, pilih nama, lalu tekan <b style="display:inline;font-weight:600">Wakilkan</b>.</figcaption>
+    </figure>
+
+    <figure>
+      <div class="phone"><div class="cam"></div><div class="scr teal-bg">
+        <div class="sb light"><span>09:42</span><span><svg viewBox="0 0 24 24"><path d="M2 22h20V2z"/></svg><svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg><svg viewBox="0 0 24 24"><path d="M17 4h-3V2h-4v2H7v18h10V4z"/></svg></span></div>
+        <div class="appbar"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Detail Agenda</div>
+        <div class="sheet">
+          <div class="f"><small>Tempat Agenda</small><b>Ruang Rapat Bupati</b></div>
+          <div class="f"><small>Waktu</small><b>09:00 - Selesai</b></div>
+          <div class="f"><small>Pakaian</small><b>PSL</b></div>
+          <div class="f"><small>Status Kehadiran</small><b>Diwakilkan oleh Budi Santoso</b></div>
+          <div class="eb blue"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Edit Agenda</div>
+          <div class="eb teal"><svg viewBox="0 0 24 24"><path d="M21 3H3c-1.11 0-2 .89-2 2v14c0 1.11.89 2 2 2h18c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2zm0 16.02H3V4.98h18v14.04zM10 12H8l4-4 4 4h-2v4h-4v-4z"/></svg>Hadiri</div>
+          <div class="eb red"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>Hapus Agenda</div>
+        </div>
+        <div class="snack"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><div><b>Berhasil</b><small>Konfirmasi agenda berhasil</small></div></div>
+      </div></div>
+      <figcaption><b>3. Agenda berstatus Diwakilkan</b>Muncul pesan Berhasil dan nama perwakilan pada status.</figcaption>
+    </figure>
+
+    <figure>
+      <div class="phone"><div class="cam"></div><div class="scr">
+        <div class="wa">
+          <div class="sb light" style="background:#0F5E57"><span>09:42</span><span><svg viewBox="0 0 24 24"><path d="M2 22h20V2z"/></svg><svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg><svg viewBox="0 0 24 24"><path d="M17 4h-3V2h-4v2H7v18h10V4z"/></svg></span></div>
+          <div class="wa-top"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg><div class="av">SB</div><div><b>Siagan Bedas</b><small>online</small></div></div>
+          <div class="wa-body">
+            <div class="day">Hari ini</div>
+            <div class="bub">Yth. Budi Santoso
+
+Anda ditunjuk sebagai perwakilan untuk menghadiri agenda berikut:
+
+Kamis, 8 Okt 2026
+09:00
+Rapat Koordinasi Contoh
+di Ruang Rapat Bupati
+LS: Sekretariat Daerah
+Pendamping:
+Budi Santoso
+Pakaian:
+PSL
+Catatan:
+Contoh keterangan tambahan agenda.
+
+Mohon konfirmasi kehadiran. Terima kasih.<time>09:42</time></div>
+          </div>
+          <div class="wa-in"><div>Ketik pesan</div><span></span></div>
+        </div>
+      </div></div>
+      <figcaption><b>4. Perwakilan menerima WhatsApp</b>Isi pesan mengikuti template yang diatur admin.</figcaption>
+    </figure>
+  </div>
+  <p class="mock-note">Tampilan aplikasi dan WhatsApp pada bagian ini adalah mockup ilustrasi, bukan tangkapan layar.</p>
+
+  <h3>Hal yang perlu diperhatikan</h3>
+  <ul class="plain">
+    <li>Pilih nama dari daftar bila tersedia. Kolom isian manual hanya untuk perwakilan yang belum terdaftar.</li>
+    <li>Nama yang diketik manual tetap tersimpan pada status agenda, tetapi pesan WhatsApp hanya terkirim bila nama tersebut ada di Master Pendamping dan berstatus aktif.</li>
+    <li>Hanya aksi <b>Wakilkan</b> yang mengirim pesan. Aksi lain seperti Hadiri, Edit, atau Hapus tidak mengirim apa pun.</li>
+  </ul>
+</section>
+
+<!-- ================= 4 ================= -->
+<section id="pesan">
+  <p class="eyebrow">Bagian 4 &middot; Dikerjakan admin</p>
+  <h2>Atur isi pesan</h2>
+  <p>Isi pesan tidak lagi baku. Admin bisa menulis ulang header, isi, dan footer, serta menyisipkan data agenda memakai token seperti <code>{{acara}}</code> atau <code>{{pakaian}}</code>.</p>
+
+  <h3>Pesan terdiri dari tiga bagian</h3>
+  <div class="msg" role="img" aria-label="Struktur pesan: header, isi, dan footer">
+    <div class="blk b1"><div class="lab">1. Header</div><div class="txt">Yth. <mark>{{nama_pendamping}}</mark>
+
+Anda ditunjuk sebagai perwakilan untuk menghadiri agenda berikut:</div></div>
+    <div class="blk b2"><div class="lab">2. Isi</div><div class="txt"><mark>{{tanggal}}</mark>
+<mark>{{waktu}}</mark>
+<mark>{{acara}}</mark>
+di <mark>{{tempat}}</mark>
+LS: <mark>{{leading_sektor}}</mark>
+Pakaian: <mark>{{pakaian}}</mark></div></div>
+    <div class="blk b3"><div class="lab">3. Footer</div><div class="txt">Mohon konfirmasi kehadiran. Terima kasih.</div></div>
+  </div>
+  <p>Bagian yang dikosongkan otomatis kembali ke teks bawaan sistem, jadi pesan tidak akan pernah kosong.</p>
+
+  <h3>Halaman Pengaturan Pesan WA</h3>
+  <figure>
+    <div class="shot"><img src="img/06-template-editor.png" alt="Halaman Pengaturan Pesan WA berisi kolom header, isi, footer, dan daftar token"></div>
+    <figcaption>Halaman Pengaturan Pesan WA dengan isian bawaan.</figcaption>
+  </figure>
+  <ol class="legend">
+    <li><span class="n">1</span><span>Buka dari menu <b>Pengaturan Pesan WA</b>.</span></li>
+    <li><span class="n">2</span><span><b>Header</b>, kalimat pembuka. Cocok untuk salam dan tujuan pesan.</span></li>
+    <li><span class="n">3</span><span><b>Isi</b>, detail agenda. Setiap baris bebas ditulis ulang, ditambah, atau dihapus.</span></li>
+    <li><span class="n">4</span><span><b>Footer</b>, kalimat penutup.</span></li>
+    <li><span class="n">5</span><span><b>Daftar token</b> yang bisa disisipkan di ketiga kolom.</span></li>
+    <li><span class="n">6</span><span><b>Kirim Contoh</b> mengirim pratinjau ke satu perwakilan untuk dicek di WhatsApp.</span></li>
+    <li><span class="n">7</span><span><b>Simpan</b> menerapkan perubahan untuk semua pesan berikutnya.</span></li>
+  </ol>
+
+  <h3>Token yang tersedia</h3>
+  <p>Tulis token persis seperti di tabel, lengkap dengan kurung kurawal ganda. Saat pesan dikirim, token diganti dengan data agenda yang sebenarnya.</p>
+  <table class="tbl tok">
+    <thead><tr><th>Token</th><th>Diganti dengan</th><th>Contoh hasil</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Token"><code>{{nama_pendamping}}</code></td><td data-label="Diganti dengan">Nama perwakilan penerima pesan</td><td data-label="Contoh hasil">Budi Santoso</td></tr>
+      <tr><td data-label="Token"><code>{{acara}}</code></td><td data-label="Diganti dengan">Nama acara</td><td data-label="Contoh hasil">Rapat Koordinasi Contoh</td></tr>
+      <tr><td data-label="Token"><code>{{tanggal}}</code></td><td data-label="Diganti dengan">Hari dan tanggal agenda</td><td data-label="Contoh hasil">Kamis, 8 Okt 2026</td></tr>
+      <tr><td data-label="Token"><code>{{waktu}}</code></td><td data-label="Diganti dengan">Jam mulai</td><td data-label="Contoh hasil">09:00</td></tr>
+      <tr><td data-label="Token"><code>{{tempat}}</code></td><td data-label="Diganti dengan">Lokasi acara</td><td data-label="Contoh hasil">Ruang Rapat Bupati</td></tr>
+      <tr><td data-label="Token"><code>{{leading_sektor}}</code></td><td data-label="Diganti dengan">Leading sektor atau OPD penanggung jawab</td><td data-label="Contoh hasil">Sekretariat Daerah</td></tr>
+      <tr><td data-label="Token"><code>{{pakaian}}</code></td><td data-label="Diganti dengan">Ketentuan pakaian</td><td data-label="Contoh hasil">PSL</td></tr>
+      <tr><td data-label="Token"><code>{{catatan}}</code></td><td data-label="Diganti dengan">Keterangan tambahan agenda</td><td data-label="Contoh hasil">Contoh keterangan tambahan agenda.</td></tr>
+    </tbody>
+  </table>
+  <p class="note"><strong>Data yang kosong.</strong> Jika sebuah agenda tidak punya data untuk token tertentu, misalnya pakaian belum diisi, token itu diganti dengan tanda <code>-</code>. Kalau tidak ingin baris itu muncul, hapus barisnya dari template.</p>
+
+  <h3>Contoh kustomisasi</h3>
+  <p>Setiap baris pada kolom Isi bebas ditulis dengan gaya sendiri. Dua contoh untuk token pakaian:</p>
+  <div class="ba">
+    <div><small>Yang diketik admin</small><p><code>Pakaian: {{pakaian}}</code></p></div>
+    <div class="res"><small>Yang diterima perwakilan</small><p>Pakaian: PSL</p></div>
+    <div><small>Yang diketik admin</small><p><code>Diharap menggunakan pakaian {{pakaian}} untuk acara tersebut.</code></p></div>
+    <div class="res"><small>Yang diterima perwakilan</small><p>Diharap menggunakan pakaian PSL untuk acara tersebut.</p></div>
+  </div>
+
+  <p>Berikut contoh template yang ditulis ulang seluruhnya, beserta hasil pratinjaunya.</p>
+  <div class="fig-row">
+    <figure>
+      <div class="shot mid"><img src="img/09-custom-editor.png" alt="Header dan isi yang ditulis ulang memakai token"></div>
+      <figcaption>Header dan isi ditulis ulang dengan token.</figcaption>
+    </figure>
+    <figure>
+      <div class="shot mid"><img src="img/10-custom-preview.png" alt="Pratinjau pesan hasil template kustom"></div>
+      <figcaption>Pratinjau langsung hasilnya, memakai data agenda contoh.</figcaption>
+    </figure>
+  </div>
+
+  <h3>Pratinjau dan Kirim Contoh</h3>
+  <figure>
+    <div class="shot mid"><img src="img/08-preview-kirim.png" alt="Bagian Pratinjau dan Kirim Contoh pada halaman pengaturan"></div>
+    <figcaption>Pratinjau berubah otomatis saat isian diedit. Pilihan penerima ada pada bagian Kirim Contoh.</figcaption>
+  </figure>
+  <ol class="legend">
+    <li><span class="n">1</span><span><b>Pratinjau</b> menampilkan pesan lengkap memakai data agenda contoh, tanpa perlu menyimpan.</span></li>
+    <li><span class="n">2</span><span><b>Kirim ke</b>, pilih perwakilan aktif yang akan menerima pesan contoh, lalu tekan <b>Kirim Contoh</b> di kanan atas.</span></li>
+  </ol>
+  <ul class="plain">
+    <li>Urutan kerja yang disarankan: ubah isian, cek pratinjau, kirim contoh ke nomor sendiri bila perlu, lalu <b>Simpan</b>.</li>
+    <li>Perubahan baru dipakai untuk pesan sungguhan setelah <b>Simpan</b> ditekan.</li>
+    <li><b>Kirim Contoh</b> mengirim WhatsApp sungguhan dan tercatat di Log Notifikasi WA.</li>
+  </ul>
+</section>
+
+<!-- ================= 5 ================= -->
+<section id="pantau">
+  <p class="eyebrow">Bagian 5</p>
+  <h2>Pantau pengiriman</h2>
+  <p>Setiap percobaan kirim, baik dari aksi Wakilkan maupun dari tombol Test WA dan Kirim Contoh, tercatat di Log Notifikasi WA.</p>
+  <figure>
+    <div class="shot"><img src="img/11-log-list.png" alt="Daftar log notifikasi WhatsApp dengan status Terkirim dan Gagal"></div>
+    <figcaption>Contoh Log Notifikasi WA. Nomor telepon disamarkan.</figcaption>
+  </figure>
+  <ol class="legend">
+    <li><span class="n">1</span><span><b>Waktu</b> percobaan kirim, terbaru di paling atas.</span></li>
+    <li><span class="n">2</span><span><b>Pendamping</b> penerima pesan.</span></li>
+    <li><span class="n">3</span><span><span class="chip green">Terkirim</span> berarti layanan WhatsApp menerima pesan untuk dikirim.</span></li>
+    <li><span class="n">4</span><span><span class="chip red">Gagal</span> berarti pesan ditolak atau tidak bisa diproses. Buka detailnya untuk melihat alasannya.</span></li>
+    <li><span class="n">5</span><span><b>View</b> menampilkan isi pesan lengkap dan balasan dari layanan pengirim.</span></li>
+  </ol>
+  <p class="note"><strong>Catatan.</strong> Status Terkirim menandakan pesan sudah diserahkan ke layanan WhatsApp, bukan jaminan bahwa penerima sudah membacanya. Kolom ID Agenda kosong untuk pesan uji.</p>
+</section>
+
+<!-- ================= 6 ================= -->
+<section id="masalah">
+  <p class="eyebrow">Bagian 6</p>
+  <h2>Jika pesan tidak terkirim</h2>
+  <p>Periksa gejala berikut dari atas ke bawah.</p>
+  <table class="tbl">
+    <thead><tr><th>Gejala</th><th>Penyebab yang umum</th><th>Yang perlu dilakukan</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Gejala">Tidak ada baris baru di Log Notifikasi WA</td><td data-label="Penyebab yang umum">Nama dari aplikasi tidak cocok dengan Master Pendamping, perwakilan nonaktif, nomor HP kosong, atau aplikasi masih versi lama.</td><td data-label="Yang perlu dilakukan">Cek ejaan nama, pastikan status Aktif dan nomor terisi. Minta ajudan memakai aplikasi versi terbaru.</td></tr>
+      <tr><td data-label="Gejala">Status Gagal, keterangan nomor tidak valid</td><td data-label="Penyebab yang umum">Nomor HP salah atau mengandung huruf.</td><td data-label="Yang perlu dilakukan">Perbaiki nomor di Master Pendamping, lalu uji dengan Test WA.</td></tr>
+      <tr><td data-label="Gejala">Status Gagal, ditolak layanan pengirim</td><td data-label="Penyebab yang umum">Perangkat WhatsApp pada layanan Fonnte terputus, kuota habis, atau token tidak berlaku.</td><td data-label="Yang perlu dilakukan">Periksa status perangkat dan kuota di dashboard Fonnte. Bila token berganti, minta admin teknis memperbaruinya di pengaturan server.</td></tr>
+      <tr><td data-label="Gejala">Pesan terkirim tetapi tertulis <code>{{...}}</code> apa adanya</td><td data-label="Penyebab yang umum">Penulisan token keliru.</td><td data-label="Yang perlu dilakukan">Cocokkan dengan daftar token pada Bagian 4. Pastikan memakai kurung kurawal ganda dan huruf kecil.</td></tr>
+      <tr><td data-label="Gejala">Beberapa baris pesan berisi tanda "-"</td><td data-label="Penyebab yang umum">Data agenda untuk token itu belum diisi.</td><td data-label="Yang perlu dilakukan">Lengkapi data agenda, atau hapus baris tersebut dari template.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Panduan ini menjelaskan fitur notifikasi WhatsApp perwakilan agenda dan pengaturan isi pesan pada Siagan Bedas. Untuk kendala teknis di luar daftar di atas, hubungi pengembang aplikasi.</p>
+  </div>
+</footer>
+
+</body>
+</html>

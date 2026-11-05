@@ -30,6 +30,14 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'wa_driver' => env('WA_DRIVER', 'fonnte'),
+
+    'evolution' => [
+        'url' => env('EVOLUTION_URL', 'https://whatsapp.bandungkab.com'),
+        'api_key' => env('EVOLUTION_API_KEY'),
+        'instance' => env('EVOLUTION_INSTANCE', 'agenda-siagan'),
+    ],
+
     'fonnte' => [
         'token' => env('FONNTE_TOKEN'),
         'url' => env('FONNTE_URL', 'https://api.fonnte.com/send'),

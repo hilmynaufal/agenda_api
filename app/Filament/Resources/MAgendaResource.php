@@ -24,6 +24,8 @@ class MAgendaResource extends Resource
 
     protected static ?string $modelLabel = 'Agenda';
 
+    protected static ?string $pluralModelLabel = 'Agenda';
+
     public const STATUS_OPTIONS = [
         0 => 'Menunggu Konfirmasi',
         1 => 'Diterima',

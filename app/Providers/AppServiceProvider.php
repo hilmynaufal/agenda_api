@@ -14,7 +14,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        // Library vendor (Laravel 8 / Filament 2) belum kompatibel penuh dengan PHP 8.4; sembunyikan notice deprecated.
+        error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
     }
 
     /**

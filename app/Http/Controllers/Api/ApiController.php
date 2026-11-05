@@ -14,7 +14,7 @@ use App\Models\MAgendaSiswa;
 use App\Models\MAbsensi;
 use App\Models\MPendamping;
 use App\Models\WaTemplate;
-use App\Services\FonnteService;
+use App\Services\WhatsAppService;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
@@ -511,7 +511,7 @@ class ApiController extends Controller
 
             $message = $this->buatPesanPerwakilan($master->nama, $agenda);
 
-            (new FonnteService())->send($master->no_hp, $message, [
+            WhatsAppService::make()->send($master->no_hp, $message, [
                 'agenda_id' => $agendaId,
                 'pendamping_id' => $master->id,
                 'nama_pendamping' => $master->nama,

@@ -4,7 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\MPendampingResource\Pages;
 use App\Models\MPendamping;
-use App\Services\FonnteService;
+use App\Services\WhatsAppService;
 use Filament\Forms;
 use Filament\Notifications\Notification;
 use Filament\Resources\Form;
@@ -23,6 +23,8 @@ class MPendampingResource extends Resource
     protected static ?string $navigationLabel = 'Pendamping (Perwakilan)';
 
     protected static ?string $modelLabel = 'Pendamping';
+
+    protected static ?string $pluralModelLabel = 'Pendamping';
 
     public static function form(Form $form): Form
     {
@@ -83,7 +85,7 @@ class MPendampingResource extends Resource
                     ->requiresConfirmation()
                     ->modalSubheading(fn (MPendamping $record) => "Kirim pesan test WhatsApp ke {$record->nama} ({$record->no_hp})?")
                     ->action(function (MPendamping $record) {
-                        $berhasil = (new FonnteService())->send(
+                        $berhasil = WhatsAppService::make()->send(
                             $record->no_hp,
                             "Halo {$record->nama}, ini adalah pesan test dari sistem notifikasi Agenda Siagan Bedas. Nomor Anda sudah terhubung dengan baik.",
                             [
